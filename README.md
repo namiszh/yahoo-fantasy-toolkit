@@ -18,8 +18,8 @@ The price depends on your league settings, such as team numbers, players per tea
 
 TBD - No idea yet.
 
-reference: 
-https://github.com/joehand/fantasy_bball_research
+*Reference:* 
+* https://github.com/joehand/fantasy_bball_research
 
 
 ## Lineup
@@ -32,9 +32,9 @@ You can include these details as options to avoid having to fill them in each ti
 
 `python start-active-players.py --days=7 --username=YahooUsername --password=Y0urYah00Passw0rd --headless=False`
 
-reference: 
-https://github.com/devinmancuso/nba-start-active-players-bot
-https://github.com/jbrudvik/yahoo-fantasy-basketball
+*Reference:* 
+* https://github.com/devinmancuso/nba-start-active-players-bot
+* https://github.com/jbrudvik/yahoo-fantasy-basketball
 
 ## Power Ranking
 
@@ -46,12 +46,12 @@ This is a web app that shows the power ranking for your leagues.
 
 ## Dependencies
 
-* Python
+* [Python](https://www.python.org/)
 * [Click](http://click.pocoo.org/)
-* Selenium WebDriver
+* [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/)
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
-* PhantomJS
-* Flask
+* [PhantomJS](http://phantomjs.org/)
+* [Flask](http://flask.pocoo.org/)
 
 
 ## To-Do

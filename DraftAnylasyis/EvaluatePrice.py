@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
     Script to evaluate player prices before drafting.
@@ -7,21 +8,22 @@
     and then use league settings to evaluate player prices.
 
     First, you need to have a paid basetballmonster membership, otherwise
-    you cannot view the projection.
+    there is no projection data on the projection page.
 
     :copyright: (c) 2017 by HuangShaozuo.
 """
 
+import csv
+import time
+import click
 from bs4 import BeautifulSoup
 from scipy import stats
 from selenium import webdriver
 from selenium.webdriver import PhantomJS
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-import click
-import csv
-import pandas as pd
-import time
+
 
 # the web site 'basketballmonster' need to be paid member to view the projection 
 BB_USER_NAME='yourbasketballmonserusername'
@@ -93,8 +95,14 @@ class PriceEvaluator() :
         # time.sleep(5)
 
         # after login, the page will redirect to main, now go to league settings
+        # hover to Fantasy Basketball to display the hidden dropdown menu 
+        settings = driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[7]/a')
+        hov = ActionChains(driver).move_to_element(settings)
+        hov.perform()
+        # time.sleep(1)
+
         print("league setting on https://basketballmonster.com/LeagueSettings.aspx")
-        driver.get('https://basketballmonster.com/LeagueSettings.aspx')
+        driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[7]/ul/li[1]/a').click()
         teamNumElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_NumberOfTeamsTextBox')
         teamNumElement.send_keys(Keys.CONTROL + "a")
         teamNumElement.send_keys(self.team_num)
@@ -120,8 +128,12 @@ class PriceEvaluator() :
         # time.sleep(5)
 
          # use 2016 player ranking to test for now, will change to projection when it is available
+        rankings = driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[2]/a')
+        hov = ActionChains(driver).move_to_element(rankings)
+        hov.perform()
         print("redirect to https://basketballmonster.com/PlayerRankings.aspx")
-        driver.get('https://basketballmonster.com/PlayerRankings.aspx')
+        driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[2]/ul/li[1]/a').click()
+        # driver.get('https://basketballmonster.com/PlayerRankings.aspx')
 
          # player filter set to "all players"
         driver.find_element_by_id('ContentPlaceHolder1_PlayerFilterUserControl1_PlayerFilterRadioButtonList_1').click()
@@ -155,9 +167,9 @@ class PriceEvaluator() :
         """
         soup = BeautifulSoup(page_source, "html.parser")
         rows = soup.find('table', class_='gridT gridThighlight data-font').findAll('tr')
-        print("there are ", len(rows), "rows in the data table")
+        print("There are ", len(rows), "rows in the data table")
         player_data = [row for row in rows if row.find('td')]  # skip header rows
-        print("there are ", len(player_data), "players in the data table")
+        print("There are ", len(player_data), "players in the data table")
 
         # get only value and name, the 4th column: value; 5th column : name 
         player_data = [[col.text.strip() for col in row.findAll('td')[3:5]] for row in player_data] # get only value and name
@@ -181,16 +193,16 @@ class PriceEvaluator() :
 
         total_player_num = self.team_num * self.player_num_per_team
         total_salary_cap = self.team_num * self.salary_cap_per_team
-        print('the number of total player:', total_player_num)
-        print('the number of $1 player:', self.one_dollar_player_num)
-        print('total salary in your league:', total_salary_cap)
+        print('The number of total player:', total_player_num)
+        print('The number of $1 player:', self.one_dollar_player_num)
+        print('Total salary in your league:', total_salary_cap)
 
         top_player_budget = total_salary_cap - self.one_dollar_player_num * 1
         top_player_num = total_player_num - self.one_dollar_player_num
         top_player_ave_price = top_player_budget / top_player_num
-        print('available funds for top player:', top_player_budget)
-        print('the number of top player:', top_player_num)
-        print('total average price of top player:', top_player_ave_price)
+        print('Available funds for top player:', top_player_budget)
+        print('The number of top player:', top_player_num)
+        print('Total average price of top player:', top_player_ave_price)
 
         # there can be two ways to map the average price to a player:
         #    o. median player. 
@@ -241,7 +253,7 @@ class PriceEvaluator() :
         for name, price in zip (per_game_names, per_game_prices):
             name_to_price_map[name] = price
 
-        print('write to result to csv file "price.csv"')
+        print('Write to result to csv file "price.csv"')
         with open('price.csv', 'w', newline='') as csvfile:
             fieldnames = ['Name', 'Price_Total', 'Price_PerGame']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -256,7 +268,7 @@ class PriceEvaluator() :
 @click.option('--team_num', type=int, default=18, prompt='team numbers in your league', help='Your team numbers of the league.')
 @click.option('--player_num_per_team', type=int, default=12, prompt='player numbers of each team', help='player numbers for each team.')
 @click.option('--salary_cap_per_team', type=int, default=200, prompt='salary cap of each team', help='salary cap for each team.')
-@click.option('--one_dollar_player_num', type=int, default=30, prompt='# of total $1 player in league', help='the more the $1 player, the more funds available for top players.')
+@click.option('--one_dollar_player_num', type=int, default=30, prompt='number of total $1 player in league', help='the more the $1 player, the more funds available for top players.')
 def main(team_num, player_num_per_team, salary_cap_per_team, one_dollar_player_num):
 
     evaluator = PriceEvaluator(team_num, player_num_per_team, salary_cap_per_team, one_dollar_player_num)

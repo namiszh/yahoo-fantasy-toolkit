@@ -52,12 +52,14 @@ This is a web app that shows the power ranking for your leagues.
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 * [PhantomJS](http://phantomjs.org/)
 * [Flask](http://flask.pocoo.org/)
+* [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4)
+* [scipy](https://www.scipy.org/)
 
 
 ## To-Do
 
 **Draft Analysis**
-- [ ] Scrape projection data from web
+- [*] Scrape projection data from web
 - [ ] Get project data from more websites
 - [ ] Real Time Draft
 

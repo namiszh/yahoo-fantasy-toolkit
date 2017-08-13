@@ -1,0 +1,17 @@
+{% if menu_type == "week" %}
+<h1>Weeks</h1>
+<ul>
+    <li><a href="{{ url_for('show_week', league_id={{league_id}}, week=0) }}">Season</a></li>
+    <br>
+    {% for i in reversed(range(10))) %}
+        <li><a href="{{ url_for('show_week', league_id={{league_id}}, week={{i}}) }}">Week {{i}}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<h1>Teams</h1>
+<ul>
+    {% for i, team in enumerate(teams) %}
+        <li><a href="{{ url_for('show_week', league_id={{league_id}}, team={{i+1}}) }}">{{team}}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}

@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB">
+<head>
+	<title>Power Rankings - Yahoo Fantasy Basketball</title>
+	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+	<link rel="shortcut icon" href="../static/image/app_icon.jpg" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="../static/css/screen.css" media="screen" />
+</head>
+<body>
+
+<div id="header">
+	<h1>Power Rankings - </h1>
+	<h2>Yahoo Fantasy Basketball</h2>
+	<ul>
+		<li><a href="{{ url_for('show_week', league_id=1, week=1) }}">Alpha 2017 -2018 <span>信你邪</span></a></li>
+		<li><a href="{{ url_for('show_week', league_id=2, week=1) }}">NB <span>邪大师</span></a></li>
+		<li><a href="{{ url_for('show_week', league_id=3, week=1) }}">Never Ending <span>真邪门</span></a></li>
+	</ul>
+	<p id="layoutdims">Show by: <a href="#">Bar Graph</a> | <a href="#">Trend Chart</a> </p>
+</div>
+<div class="colmask leftmenu">
+	<div class="colleft">
+		<div class="col1">
+			<!-- Column 1 start -->
+
+			<p>第一周</p>
+
+			<p>图标</p>
+			<!-- Column 1 end -->
+		</div>
+		<div class="col2">
+			<!-- Column 2 start -->
+			
+			{% if menu_type == "week" %}
+			<h1>Weeks</h1>
+			<ul>
+				<li><a href="#">Season</a></li>
+				<br>
+				<li><a href="{{ url_for('show_week', league_id=1, week=1) }}">Week 1</a></li>
+				<li><a href="#">Week 2</a></li>
+				<li><a href="#">Week 3</a></li>
+				<li><a href="#">Week 4</a></li>
+				<li><a href="#">Week 5</a></li>
+				<li><a href="#">Week 1</a></li>
+				<li><a href="#">Week 2</a></li>
+				<li><a href="#">Week 3</a></li>
+				<li><a href="#">Week 4</a></li>
+				<li><a href="#">Week 5</a></li>
+				<li><a href="#">Week 1</a></li>
+				<li><a href="#">Week 2</a></li>
+				<li><a href="#">Week 3</a></li>
+				<li><a href="#">Week 4</a></li>
+				<li><a href="#">Week 5</a></li>
+				<li><a href="#">Week 1</a></li>
+				<li><a href="#">Week 2</a></li>
+				<li><a href="#">Week 3</a></li>
+				<li><a href="#">Week 4</a></li>
+				<li><a href="#">Week 5</a></li>
+				<li><a href="#">Week 1</a></li>
+				<li><a href="#">Week 2</a></li>
+				<li><a href="#">Week 3</a></li>
+				<li><a href="#">Week 4</a></li>
+				<li><a href="#">Week 5</a></li>
+			</ul>
+			{% else %}
+			<h1>Teams</h1>
+			<ul>
+				<li><a href="#">Team 1</a></li>
+				<li><a href="#">Team 2</a></li>
+				<li><a href="#">Team 3</a></li>
+				<li><a href="#">Team 4</a></li>
+				<li><a href="#">Team 5</a></li>
+				<li><a href="#">Team 1</a></li>
+				<li><a href="#">Team 2</a></li>
+				<li><a href="#">Team 3</a></li>
+				<li><a href="#">Team 4</a></li>
+				<li><a href="#">Team 5</a></li>
+				<li><a href="#">Team 1</a></li>
+				<li><a href="#">Team 2</a></li>
+				<li><a href="#">Team 3</a></li>
+				<li><a href="#">Team 4</a></li>
+				<li><a href="#">Team 5</a></li>
+				<li><a href="#">Team 1</a></li>
+				<li><a href="#">Team 2</a></li>
+				<li><a href="#">Team 3</a></li>
+				<li><a href="#">Team 4</a></li>
+				<li><a href="#">Team 5</a></li>
+			</ul>
+			{% endif %}
+			<!-- Column 2 end -->
+		</div>
+	</div>
+</div>
+<div id="footer">
+	<p>This page uses the <a href="http://matthewjamestaylor.com/blog/perfect-2-column-left-menu.htm">Perfect 'Left Menu' 2 Column Liquid Layout</a> by <a href="http://matthewjamestaylor.com">Matthew James Taylor</a>. View more <a href="http://matthewjamestaylor.com/blog/-website-layouts">website layouts</a> and <a href="http://matthewjamestaylor.com/blog/-web-design">web design articles</a>.</p>
+</div>
+
+</body>
+</html>

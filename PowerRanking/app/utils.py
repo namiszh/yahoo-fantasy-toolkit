@@ -22,7 +22,7 @@ def data_to_ranking_score(values, reverse = False):
     return scores;
 
 
-def data_to_score_2(data_file_name):
+def parse_data_file(data_file_name):
     '''The method reads a league's raw data of for week or total season from a csv file, 
         then convert these data to scores and output to another csv file.
     '''
@@ -41,4 +41,4 @@ def data_to_score_2(data_file_name):
     df.to_csv(score_file_name, index=False)
 
 if __name__ == '__main__':
-    data_to_score_2('../data/data_817_1.csv')
+    parse_data_file('../data/data_817_1.csv')

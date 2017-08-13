@@ -19,7 +19,7 @@ db.session.add(l2)
 print ('add league Alpha')
 
 
-with open('./data/week1.csv', 'r') as csvfile:
+with open('./data/data_817_1.csv', 'r') as csvfile:
     reader = csv.DictReader(csvfile)
     for i, row in enumerate (reader):
         t1= Team(id=i+1, name=row['Team Name'], league_id=817)
@@ -28,11 +28,17 @@ with open('./data/week1.csv', 'r') as csvfile:
         t2= Team(id=i+1, name=row['Team Name'], league_id=818)
         db.session.add(t2)
 
-        # r = Record(week=1, fg=row['FG%'], ft=row['FT%'], pts=row['PTS'],
-        #     _3pm=row['3PM'], oreb=row['OREB'], reb=row['REB'], ast=row['AST'],
-        #     stl=row['STL'], blk=row['BLK'], to=row['ATO'], at=row['A/O'], 
-        #     league_id=817, team_id = i)
-        # db.session.add(r)
+        r1 = Record(week=1, fg=row['FG%'], ft=row['FT%'], pts=row['PTS'],
+            _3pm=row['3PTM'], oreb=row['OREB'], reb=row['REB'], ast=row['AST'],
+            stl=row['ST'], blk=row['BLK'], to=row['TO'], at=row['A/T'], 
+            league_id=817, team_id = i+1)
+        db.session.add(r1)
+
+        r2 = Record(week=1, fg=row['FG%'], ft=row['FT%'], pts=row['PTS'],
+            _3pm=row['3PTM'], oreb=row['OREB'], reb=row['REB'], ast=row['AST'],
+            stl=row['ST'], blk=row['BLK'], to=row['TO'], at=row['A/T'], 
+            league_id=818, team_id = i+1)
+        db.session.add(r2)
 
 db.session.commit()
 print ('add league teams')
@@ -48,4 +54,9 @@ print ('all teams')
 teams = Team.query.all()
 for team in teams:
     print (team)
+
+print ('all records')
+records = Record.query.all()
+for record in records:
+    print (record)
 

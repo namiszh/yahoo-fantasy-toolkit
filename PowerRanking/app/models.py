@@ -8,14 +8,14 @@ class Team(db.Model):
     # records = db.relationship('Record', backref='team', lazy='dynamic')
 
     def __repr__(self):
-        return '<Team id={}, name={}, league_id={}>'.format(self.id, self.name, self.league_id)
+        return '<Team id={}, name={}, league name={}>'.format(self.id, self.name, self.league.name)
 
 class League(db.Model):
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(120))
     my_team = db.Column(db.Integer)
     teams = db.relationship('Team', backref='league', lazy='dynamic')
-    # records = db.relationship('Record', backref='league', lazy='dynamic')
+    records = db.relationship('Record', backref='league', lazy='dynamic')
 
     def __repr__(self):
         return '<League id={}, name={}, my team={}>'.format(self.id, self.name, self.my_team)
@@ -38,11 +38,12 @@ class Record(db.Model):
     to = db.Column(db.Integer)
     at = db.Column(db.Float)
 
-#     league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True)
-#     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), primary_key=True)
+    league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), primary_key=True)
 
-    # def __repr__(self):
-    #     return '<Week %r>' % (self.week)
+    def __repr__(self):
+        return '<Week={}, league={}, team={}, fg={}, ft={}, pts={}, 3pm={}, oreb={}, reb={}, ast={}, stl={}, blk={}, to={}, at={}>'.format(self.week,
+            self.league.name, self.team_id, self.fg, self.ft, self.pts, self._3pm, self.oreb, self.reb, self.ast, self.stl, self.blk, self.to, self.at)
 
 
 #     def _ReadFromCSV(league_name, team_name, week):

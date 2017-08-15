@@ -7,6 +7,8 @@ import re
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+from io import BytesIO
+import base64
 
 def data_to_ranking_score(values, reverse = False):
     '''
@@ -39,9 +41,82 @@ def parse_data_file(data_file_name):
     # add a column 'Total', its value 
     df['Total'] = df[headers[1:]].sum(axis=1)
 
-    score_file_name = re.sub(r'data(_\d+_\d+\.csv$)', r'score\1', data_file_name)
+    # replace 'data' in file name with score
+    score_file_name = re.sub(r'(_week\d+_)data(\.csv$)', r'\1score\2', data_file_name)
     print('write result to', score_file_name)
     df.to_csv(score_file_name, index=False)
+
+def get_week_score_png(league_id, week):
+    week_df = pd.read_csv("data/Never Ending_week1_score.csv", encoding = "ISO-8859-1")
+    total_df = pd.read_csv("data/Never Ending_week2_score.csv", encoding = "ISO-8859-1")
+    df = pd.DataFrame({'Team Name': week_df['Team Name'], 'Week': week_df['Total'], 'Season': total_df['Total']})
+    print(df)
+
+    pos = list(range(1, len(df['Team Name'])+1))
+    print(pos)
+
+    width = 0.3
+
+    # Plotting the bars
+    fig, ax = plt.subplots(figsize=(20,12))
+
+    # Create a bar with week score,
+    # in position pos,
+    plt.bar([p + width for p in pos],
+            
+            df['Week'],
+            # of width
+            width,
+            # with alpha 0.5
+            alpha=0.5,
+            # with color
+            color='#EE3224',
+            edgecolor='red',
+            # with label the first value in first_name
+            label='Week')
+
+    # Create a bar with mid_score data,
+    # in position pos + some width buffer,
+    plt.bar([p + 2*width for p in pos],
+            #using df['mid_score'] data,
+            df['Season'],
+            # of width
+            width,
+            # with alpha 0.5
+            alpha=0.2,
+            # with color
+            color='#F78F1E',
+            edgecolor='#000000',
+            # with label the second value in first_name
+            label='Season')
+
+    # Set the y axis label
+    ax.set_ylabel('Score')
+
+    # Set the chart's title
+    ax.set_title('Week {} Power Ranking'.format(week))
+
+    # Set the position of the x ticks
+    ax.set_xticks([p + 1.5 * width for p in pos])
+
+    # Set the labels for the x ticks
+    ax.set_xticklabels(df['Team Name'], rotation=60)
+
+    # Setting the x-axis and y-axis limits
+    plt.xlim(min(pos)-width, max(pos)+width*4)
+    plt.ylim(0, 180 )
+
+    # Adding the legend and showing the plot
+    plt.legend(['Week', 'Season'], loc='upper right')
+    plt.grid(True)
+
+    figfile = BytesIO()
+    plt.savefig(figfile, format='png')
+    figfile.seek(0)  # rewind to beginning of file
+    figdata_png = base64.b64encode(figfile.getvalue())
+    figdata_png = figdata_png.decode('utf8')
+
+    return figdata_png
 
 def compute_png_svg():
     """Return filename of plot of the damped_vibration function."""
@@ -57,11 +132,9 @@ def compute_png_svg():
 
     # Make Matplotlib write to BytesIO file object and grab
     # return the object's string
-    from io import BytesIO
     figfile = BytesIO()
     plt.savefig(figfile, format='png')
     figfile.seek(0)  # rewind to beginning of file
-    import base64
     figdata_png = base64.b64encode(figfile.getvalue())
     figdata_png = figdata_png.decode('utf8')
 
@@ -75,4 +148,6 @@ def compute_png_svg():
     return figdata_png
 
 if __name__ == '__main__':
-    parse_data_file('../data/data_817_1.csv')
+    parse_data_file('../data/Never Ending_week1_data.csv')
+    parse_data_file('../data/Never Ending_week2_data.csv')
+    get_week_score_png(0, 0)

@@ -11,6 +11,7 @@ from bokeh.charts import Histogram
 from bokeh.embed import components
 from app import app, status
 from .compute import compute_png_svg as compute
+from .compute import get_week_score_png
 
 @app.route('/')
 @app.route('/index')
@@ -96,7 +97,7 @@ def week(league_id, week):
         week = status.max_week
     status.current_week = week
 
-    figdata_png = compute()
+    figdata_png = get_week_score_png(league_id, week)
 
     return render_template('index.html', status=status, result=figdata_png)
 

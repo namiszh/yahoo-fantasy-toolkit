@@ -26,10 +26,14 @@
 			{% if status.type == 0 %}
 			<p>第{{status.current_week}}周</p>
 			{% else %}
-			<p>第{{status.current_team}}队</p>
+			<p>{{teams[status.current_team-1]}}</p>
 			{% endif %}
 
-			<p>图标</p>
+			<p>
+			{% if result != None %}
+			<img src="data:image/png;base64,{{ result }}" width="500", height="500">
+			{% endif %}
+			</p>
 			<!-- Column 1 end -->
 		</div>
 		<div class="col2">

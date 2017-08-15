@@ -1,17 +1,16 @@
 {% if status.type == 0 %}
-    <h1>Weeks</h1>
+    <h1><span>Weeks</span></h1>
     <ul>
         {% for i in range(status.max_week, 0, -1) %}
-        <li><a href="{{ url_for('.week', league_id=status.current_league, week=i) }}">Week {{i}}</a></li>
+        {% if i==status.current_week %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.week', league_id=status.current_league, week=i) }}">Week {{i}}</a></li>
         {% endfor %}
     </ul>
 {% else %}
-    <h1>Teams</h1>
+    <h1><span>Teams</span></h1>
     <ul>
-        {% for i in range(10) %}
-        <li><a href="{{ url_for('.team', league_id=status.current_league, team_id=i+1) }}">Team {{i}}</a></li>
+        {% for team in teams %}
+        {% if loop.index0+1==status.current_team %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.team', league_id=status.current_league, team_id=loop.index0+1) }}">{{team}}</a></li> 
         {% endfor %}
-
     </ul>
 {% endif %}
 

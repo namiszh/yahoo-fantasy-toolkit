@@ -22,18 +22,16 @@
 	<div class="colleft">
 		<div class="col1">
 			<!-- Column 1 start -->
-			<h1>第{{status.current_league}}盟<h1/>
+			<h2 align="center">第{{status.current_league}}盟
 			{% if status.type == 0 %}
-			<p>第{{status.current_week}}周</p>
+			第{{status.current_week}}周
 			{% else %}
-			<p>{{teams[status.current_team-1]}}</p>
+			{{teams[status.current_team-1]}}
 			{% endif %}
-
-			<p>
+			<h2/>
 			{% if result != None %}
 			<img src="data:image/png;base64,{{ result }}" width="100%">
 			{% endif %}
-			</p>
 			<!-- Column 1 end -->
 		</div>
 		<div class="col2">

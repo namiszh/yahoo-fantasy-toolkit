@@ -10,6 +10,13 @@ import numpy as np
 from io import BytesIO
 import base64
 
+# web application directory
+WEB_APP_ROOT = os.path.abspath(os.path.dirname( __file__ ))
+print(WEB_APP_ROOT)
+
+DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname( WEB_APP_ROOT ), 'data'))
+print(DATA_ROOT)
+
 def data_to_ranking_score(values, reverse = False):
     '''
     Given a list of value, return a list of ranking score.
@@ -46,13 +53,28 @@ def parse_data_file(data_file_name):
     print('write result to', score_file_name)
     df.to_csv(score_file_name, index=False)
 
-def get_week_score_png(league_id, week):
-    week_df = pd.read_csv("data/Never Ending_week1_score.csv", encoding = "ISO-8859-1")
-    total_df = pd.read_csv("data/Never Ending_week2_score.csv", encoding = "ISO-8859-1")
-    df = pd.DataFrame({'Team Name': week_df['Team Name'], 'Week': week_df['Total'], 'Season': total_df['Total']})
-    print(df)
+def get_week_csv_file(league_name, week, file_type='score'):
+    file_name = '{}_week{}_{}.csv'.format(league_name, week, file_type)
+    # print('week {} score file name of league "{}": "{}"'.format(week, league_name, file_name))
 
-    pos = list(range(1, len(df['Team Name'])+1))
+    file_path = os.path.abspath(os.path.join(DATA_ROOT, file_name))
+    print('week {} score file path of league "{}": "{}"'.format(week, league_name, file_path))
+
+    return file_path
+
+def get_week_score_png(league_id, week):
+
+    week_score_file = get_week_csv_file("Never Ending", 1, "score")
+    week_df = pd.read_csv(week_score_file, encoding = "ISO-8859-1")
+
+    season_score_file = get_week_csv_file("Never Ending", 0, "score")
+    season_df = pd.read_csv(season_score_file, encoding = "ISO-8859-1")
+
+    names = week_df['Team Name'].tolist()
+    week_scores = week_df['Total'].tolist()
+    season_scores = season_df['Total'].tolist()
+
+    pos = list(range(1, len(names)+1))
     print(pos)
 
     width = 0.3
@@ -64,7 +86,7 @@ def get_week_score_png(league_id, week):
     # in position pos,
     plt.bar([p + width for p in pos],
             
-            df['Week'],
+            week_scores,
             # of width
             width,
             # with alpha 0.5
@@ -79,7 +101,7 @@ def get_week_score_png(league_id, week):
     # in position pos + some width buffer,
     plt.bar([p + 2*width for p in pos],
             #using df['mid_score'] data,
-            df['Season'],
+            season_scores,
             # of width
             width,
             # with alpha 0.5
@@ -100,7 +122,7 @@ def get_week_score_png(league_id, week):
     ax.set_xticks([p + 1.5 * width for p in pos])
 
     # Set the labels for the x ticks
-    ax.set_xticklabels(df['Team Name'], rotation=60)
+    ax.set_xticklabels(names, rotation=60)
 
     # Setting the x-axis and y-axis limits
     plt.xlim(min(pos)-width, max(pos)+width*4)
@@ -148,6 +170,8 @@ def compute_png_svg():
     return figdata_png
 
 if __name__ == '__main__':
-    parse_data_file('../data/Never Ending_week1_data.csv')
-    parse_data_file('../data/Never Ending_week2_data.csv')
-    get_week_score_png(0, 0)
+
+    for i in range(0,3):
+        data_file_name = get_week_csv_file("Never Ending", i, "data")
+        # print(data_file_name)
+        parse_data_file(data_file_name)

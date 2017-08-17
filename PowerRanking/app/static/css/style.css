@@ -1,0 +1,276 @@
+* {
+    padding: 0px;
+    margin: 0px
+}
+
+body {
+	text-align:center;
+    background: #fff;
+    font-family: Georgia, "Times New Roman", 
+             "Microsoft YaHei", "微软雅黑", 
+             STXihei, "华文细黑", 
+             serif;
+}
+
+div.container 
+{
+	margin: 0 auto;
+	width: 1200px;
+}
+
+#header {
+    background: #384047;
+    z-index: 100;
+    transition: height 600ms 0s ease;
+    /*position: fixed;*/
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 40px;
+    color: #fff
+}
+
+#header-banner {
+	float: left;
+	width: 200px;
+	height: 40px;
+	/*margin: 10px 0 0 10px;*/
+	text-align:left;
+}
+
+#header-nav {
+	float: left;
+	width: 750px;
+	height: 40px;
+}
+
+#header-user {
+	float: right;
+	width: 220px;
+	height: 40px;
+	text-align: right;
+	padding: 0 5px 0 0;
+}
+#main
+{
+	clear: both;
+}
+#main-top-nav {
+    /*position: relative;*/
+    /*z-index: 999;*/
+	/*clean : both;*/
+	/*float: left;*/
+	/*height: 60px;*/
+	/*top: 40px;*/
+	/*width: 100%;*/
+	/*background:#eee;*/
+	min-height: 1px;
+/*	padding-left: 15px;
+	padding-right: 15px;
+*/}
+
+#test{
+	clear: both;
+	background: yellow;	
+	z-index: 999;
+    position: relative;
+	top: 5px;
+}
+#main-sidebar {
+	float: left;
+	width: 235px;
+	padding: 10px 1px 1px 1px;
+	background: #999999;	
+	    border-right: 1px;
+	    border-left: 1px;
+	    border-top: 1px;
+	    border-bottom: 1px;
+	    border-style: solid;
+	    /*border-width: 2px;*/
+	    border-color: #000;
+	    /*display: table;*/
+	    border-top-left-radius: 15px;
+	    border-top-right-radius: 15px;
+}
+
+#main-content {
+	float: right;
+	width: 935px;
+	padding: 5px 5px 5px 5px;
+	/*background: blue;	*/
+}
+
+#footer
+{
+	position: relative;
+	top: 20px;
+	clear: both;
+}
+
+#footer-content {
+	/*float: left;
+	/*width: 1200px;*/
+	background: red;	
+}
+
+#footer-bottom {
+	/*float: left;*/
+	/*width: 1200px;*/
+	background: gray;	
+}
+
+ul {
+	display: block;
+	clear:left;
+	float:left;
+	width:100%;
+	list-style:none;
+	margin:10px 0 0 0;
+	padding:0;
+}
+ul li {
+	display:inline;
+	list-style:none;
+	margin:0 50px 0 0;
+	padding:0;
+}
+
+#main-top-nav ul
+{
+	margin:10px 0 0 0;
+
+}
+
+
+#leagues>li {
+	position: relative;
+    /*font-size: 7px;*/
+    height: 40px;
+    z-index: 1;
+    float: left;
+    width: 140px;
+    margin:0 0 0 5px;
+    background-color: #fafafa;
+    /*border: #aaa 2px 2px 0 2px solid;*/
+    border-right: 1px;
+    border-left: 1px;
+    border-top: 1px;
+    border-bottom: 0px;
+    border-style: solid;
+    /*border-width: 2px;*/
+    border-color: #aaa;
+    display: table;
+/*    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+*/    text-align: -webkit-match-parent
+	vertical-align: middle;
+}
+#main-top-nav ul li a {
+	/*display:block;*/
+	float:left;
+	/*margin:0 0 0 1px;*/
+	/*padding:3px 10px;*/
+	/*text-align:center;*/
+	/*background:#eee;*/
+	color:#000;
+	text-decoration:none;
+/*	position:relative;
+	left:2px;
+	*/
+	line-height:1.3em;
+	/*font-size: 1.1em;*/
+	text-align: center;
+	height: 100%;
+	width: 100%;
+	/*padding: 0 5px;*/
+	vertical-align: middle;
+	display: table-cell;
+	box-shadow:  3px -2px 1px 0px rgba(50, 50, 50, 0.34);
+}
+#main-top-nav ul li a:hover {
+	background:#000000;
+	color:#fff;
+}
+#main-top-nav ul li a.active,
+#main-top-nav ul li a.active:hover {
+	color:#fff;
+	background:#000;
+	font-weight:bold;
+}
+#main-top-nav ul li a span {
+	display:block;
+}
+/* 'widths' sub menu */
+#layoutdims {
+	clear:both;
+	background:#eee;
+	border-top:3px solid #000;
+	border-bottom: 1px solid #000;
+	margin:0;
+	padding:6px 15px !important;
+	text-align:right;
+}
+
+#main-sidebar ul /*the list of weeks*/
+{
+	background:#f8f8f8;
+		/*margin: 0;*/
+	padding: 0 0 30px 0;
+	list-style: none;
+	/*text-align: center;*/
+}
+
+#main-sidebar ul li /*the list of weeks*/
+{
+	/*text-align: center;*/
+    padding: :0px 0 0 0;
+    	line-height: 1.8em;
+	    float: left;
+	    	display: table-cell;
+}
+
+#teams /*the list of weeks*/
+{
+
+}
+
+/*#main-sidebar ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#main-sidebar ul li {
+	margin-bottom: 5px;
+	line-height: 1.8em;
+	    float: left;
+	    	display: table-cell;
+}
+*/
+
+
+#main-sidebar ul li a { 
+	/*display:block;*/
+	/*float:left;*/
+	margin:0 0 0 1px;
+	padding:3px 10px;
+	/*text-align:center;*/
+	/*background:#eee;*/
+	color:#000;
+
+	text-decoration:none;
+	position:relative;
+	left:50px;
+	line-height:1.3em;
+}
+
+#main-sidebar ul li a:hover {
+	background:#000000;
+	color:#fff;
+}
+#main-sidebar ul li a.active,
+#main-sidebar ul li a.active:hover {
+	color:#fff;
+	background:#000;
+	font-weight:bold;
+}

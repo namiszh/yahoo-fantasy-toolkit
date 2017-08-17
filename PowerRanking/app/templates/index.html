@@ -4,46 +4,89 @@
 	<title>Power Rankings - Yahoo Fantasy Basketball</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
 	<link rel="shortcut icon" href="../static/image/app_icon.jpg" type="image/x-icon" />
-	<link rel="stylesheet" type="text/css" href="../static/css/screen.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../static/css/style.css" media="screen" />
 </head>
 <body>
+	<div id="header">
+		<div class="container">
+			<div id="header-banner">
+			权利的游戏
+			</div>
+			<div id="header-nav">
+				<ul>
+				    <li><a>北境之王</a>
 
-<div id="header">
-	<h1>Power Rankings - </h1>
-	<h2>Yahoo Fantasy Basketball</h2>
-	<ul>
-		<li><a href="{{ url_for('.league', league_id=1) }}">信你邪<span>Alpha 2017 -2018</span></a></li>
-		<li><a href="{{ url_for('.league', league_id=2) }}">邪大师<span>New Beginning</span></a></li>
-		<li><a href="{{ url_for('.league', league_id=3) }}">真邪门<span>Never Ending</span></a></li>
-	</ul>
-	<p id="layoutdims">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
-</div>
-<div class="colmask leftmenu">
-	<div class="colleft">
-		<div class="col1">
-			<!-- Column 1 start -->
-			<h2 align="center">第{{status.current_league}}盟
-			{% if status.type == 0 %}
-			第{{status.current_week}}周
-			{% else %}
-			{{teams[status.current_team-1]}}
-			{% endif %}
-			<h2/>
-			{% if result != None %}
-			<img src="data:image/png;base64,{{ result }}" width="100%">
-			{% endif %}
-			<!-- Column 1 end -->
-		</div>
-		<div class="col2">
-			<!-- Column 2 start -->
-			{% include 'sidebar.html' %}
-			<!-- Column 2 end -->
-		</div>
-	</div>
-</div>
-<div id="footer">
-	<p>This page uses the <a href="http://matthewjamestaylor.com/blog/perfect-2-column-left-menu.htm">Perfect 'Left Menu' 2 Column Liquid Layout</a> by <a href="http://matthewjamestaylor.com">Matthew James Taylor</a>. View more <a href="http://matthewjamestaylor.com/blog/-website-layouts">website layouts</a> and <a href="http://matthewjamestaylor.com/blog/-web-design">web design articles</a>.</p>
-</div>
+				    </li>
 
+				    <li><a>克城空气</a>
+
+				    </li>
+
+				    <li>
+				        <a>空接之城</a>
+				
+				    </li>
+
+				    <li>
+				        <a>Content</a>
+
+				    </li>
+				    <li>
+				        <a>Help</a>
+
+				    </li>
+				</ul>
+			</div>
+			<div  id="header-user">
+				<ul>
+				    <li><a>滚蛋吧</a>
+
+				    </li>
+
+				    <li><a>肿瘤君</a>
+
+				    </li>
+				    
+				</ul>
+			</div>
+        </div>
+    </div>
+    <div id="main" class="container">
+        <div id="main-top-nav">
+            <ul id="leagues">
+            	<li><a href="{{ url_for('.league', league_id=1) }}">信你邪<span>Alpha 2017 -2018</span></a></li>
+            	<li><a href="{{ url_for('.league', league_id=2) }}">邪大师<span>New Beginning</span></a></li>
+            	<li><a href="{{ url_for('.league', league_id=3) }}">真邪门<span>Never Ending</span></a></li>
+            </ul>
+            <p id="layoutdims">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
+        </div>
+        <div id="test">
+			<div id="main-sidebar">
+				{% include 'sidebar.html' %}
+			</div>
+			<div id="main-content">
+				<h2 align="center">第{{status.current_league}}盟
+				{% if status.type == 0 %}
+				第{{status.current_week}}周
+				{% else %}
+				{{teams[status.current_team-1]}}
+				{% endif %}
+				<h2/>
+				{% if result != None %}
+				<img src="data:image/png;base64,{{ result }}" width="100%">
+				{% endif %}
+			</div>
+        </div>
+    </div>
+    <div id="footer" class="container">
+		<div id="footer-content">
+			
+			<h1>footer-content</h1>
+		</div>
+		<div id="footer-bottom">
+			
+			<h1>footer-bottom</h1>
+		</div>
+    </div>
 </body>
 </html>

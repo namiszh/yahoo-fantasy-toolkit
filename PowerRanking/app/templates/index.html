@@ -10,7 +10,7 @@
 	<div id="header">
 		<div class="container">
 			<div id="header-banner">
-			权利的游戏
+			<img src="../static/image/cate_focus_pic.jpg" height="40">
 			</div>
 			<div id="header-nav">
 				<ul>
@@ -18,17 +18,17 @@
 
 				    </li>
 
-				    <li><a>克城空气</a>
+				    <li><a>克城空气换遍全联盟</a>
 
 				    </li>
 
 				    <li>
-				        <a>空接之城</a>
+				        <a>香蕉船</a>
 				
 				    </li>
 
 				    <li>
-				        <a>Content</a>
+				        <a>相信过程</a>
 
 				    </li>
 				    <li>
@@ -39,11 +39,11 @@
 			</div>
 			<div  id="header-user">
 				<ul>
-				    <li><a>滚蛋吧</a>
+				    <li><a>注销</a>
 
 				    </li>
 
-				    <li><a>肿瘤君</a>
+				    <li><a>斯马钢砸筐</a>
 
 				    </li>
 				    
@@ -51,16 +51,16 @@
 			</div>
         </div>
     </div>
-    <div id="main" class="container">
-        <div id="main-top-nav">
-            <ul id="leagues">
-            	<li><a href="{{ url_for('.league', league_id=1) }}">信你邪<span>Alpha 2017 -2018</span></a></li>
-            	<li><a href="{{ url_for('.league', league_id=2) }}">邪大师<span>New Beginning</span></a></li>
-            	<li><a href="{{ url_for('.league', league_id=3) }}">真邪门<span>Never Ending</span></a></li>
+    <div class="container">
+        <div id="top-nav">
+            <ul>
+            	<li><a href="{{ url_for('.league', league_id=1) }}">信你邪<br>Alpha 2017 -2018</a></li>
+            	<li><a href="{{ url_for('.league', league_id=2) }}">邪大师<br>New Beginning</a></li>
+            	<li><a href="{{ url_for('.league', league_id=3) }}">真邪门<br>Never Ending</a></li>
             </ul>
-            <p id="layoutdims">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
+            <p id="show-type">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
         </div>
-        <div id="test">
+        <div id="main">
 			<div id="main-sidebar">
 				{% include 'sidebar.html' %}
 			</div>
@@ -80,12 +80,11 @@
     </div>
     <div id="footer" class="container">
 		<div id="footer-content">
-			
-			<h1>footer-content</h1>
+			<a href="https://github.com/namiszh/fba/tree/master/PowerRanking" target="_blank">GitHub</a>
 		</div>
 		<div id="footer-bottom">
 			
-			<h1>footer-bottom</h1>
+			@copyright 2017
 		</div>
     </div>
 </body>

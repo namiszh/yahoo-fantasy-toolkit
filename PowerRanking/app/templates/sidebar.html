@@ -1,5 +1,5 @@
 {% if status.type == 0 %}
-    <h1><span>Weeks</span></h1>
+    <h1 class="sidebar-title">Weeks</h1>
     <ul id="weeks">
         <br>
         {% for i in range(status.max_week, 0, -1) %}
@@ -7,7 +7,7 @@
         {% endfor %}
     </ul>
 {% else %}
-    <h1><span>Teams</span></h1>
+    <h1 class="sidebar-title">Teams</h1>
     <ul id="teams">
         <br>
         {% for team in teams %}

@@ -27,7 +27,7 @@ def type(type_id):
     return redirect(url)
 
 
-@app.route('/league=<int:league_id>')
+@app.route('/lid=<int:league_id>')
 def league(league_id):
 
     status.current_league = league_id
@@ -40,7 +40,7 @@ def league(league_id):
 
 
 
-@app.route('/league=<int:league_id>/team=<int:team_id>')
+@app.route('/lid=<int:league_id>/tid=<int:team_id>')
 def team(league_id, team_id):
     '''
     Show trend chart of a team.
@@ -81,7 +81,7 @@ def team(league_id, team_id):
     return render_template('index.html', status=status, teams=teams, result=figdata_png)
 
 
-@app.route('/league=<int:league_id>/week=<int:week>')
+@app.route('/lid=<int:league_id>/week=<int:week>')
 def week(league_id, week):
     '''
     Show power ranking bar graph of the week.

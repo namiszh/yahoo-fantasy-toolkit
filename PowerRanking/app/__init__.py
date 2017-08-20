@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 
 class Status():
 
-    def __init__(self, current_league = 0, current_team = 0, current_week = 0, max_week=25, type=0):
+    def __init__(self, current_league = 0, current_team = 0, current_week = 0, max_week=18, type=0):
         self.current_league = current_league
         self.current_team = current_team
         self.current_week = current_week

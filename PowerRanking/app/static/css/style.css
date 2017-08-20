@@ -13,7 +13,7 @@ body {
 div.container 
 {
 	margin: 0 auto;
-	width: 1200px;
+	min-width: 1200px;
 }
 
 #header {
@@ -44,8 +44,8 @@ div.container
 	float: right;
 	width: 220px;
 	height: 40px;
+	vertical-align: middle;
 	text-align: right;
-	padding: 0 5px 0 0;
 }
 
 
@@ -72,7 +72,7 @@ div.container
 #main-sidebar {
 	float: left;
 	width: 210px;
-	padding: 10px 1px 1px 1px;
+	padding: 0px 0px 0px 0px;
 	background: #999999;	
     border: 1px solid #000;
     border-top-left-radius: 15px;
@@ -106,6 +106,7 @@ div.container
 }
 
 
+
 ul
 {
 	float:left;
@@ -114,7 +115,6 @@ ul
 
 ul li
  {
-	display:inline;
 	list-style:none;
 }
 
@@ -127,19 +127,38 @@ ul li a
 }
 
 #header-nav ul,
-#header-user ul,
 #top-nav ul
- {
+{
 	margin:10px 0 0 0;
 	padding:0;
 }
 
-#header-nav ul li,
-#header-user ul li
- {
+#header-nav ul li
+{
+	display:inline;
 	margin:0 50px 0 0;
 	padding:0;
 }
+
+#header-nav ul li a
+{
+	margin:0 50px 0 0;
+	padding:0;
+	color: #fff;
+	font-family: Georgia, "Times New Roman", "Microsoft YaHei", "微软雅黑", STXihei, "华文细黑", serif;
+}
+
+
+.caret{
+	color: #fff;
+}
+
+
+.dropdown-menu > li > a
+{
+	text-align: left;
+}
+
 
 #top-nav ul li {
     height: 40px;
@@ -165,6 +184,7 @@ ul li a
 #top-nav ul li a:hover {
 	background:#384047;
 	color:#fff;
+ 	text-decoration:none;
 }
 
 #top-nav ul li a.active,
@@ -178,36 +198,41 @@ ul li a
 #main-sidebar ul
 {
 	background:#f8f8f8;
-	padding: 0 0 30px 0;
+	padding: 0 0 20px 0;
 	list-style: none;
 	margin:10px 0 0 0;
 }
 
+.sidebar-title
+{
+	margin-top:10px;
+	margin-bottom: 0px;
+}
+
 #main-sidebar ul li
 {
-	width: 200;
-	line-height: 1.8em;
-	display: table;
+	display: block;
 	margin:0 auto;
 	padding: 5px 0px;
 }
 
+#main-sidebar ul li:hover
+{
+	background:#999999;
+}
+
 
 #main-sidebar ul li a { 
+	display:block !important;
 	line-height:1.3em;
-	display: table-cell;
+	color:#000000;
 	text-align: center;
 }
 
 
 #main-sidebar ul li a:hover {
-	background:#000000;
-	color:#fff;
-}
-
-#main-sidebar ul li a.active,
-#main-sidebar ul li a.active:hover {
-	color:#fff;
-	background:#000;
+	color:#000000;
+ 	text-decoration:none;
 	font-weight:bold;
 }
+

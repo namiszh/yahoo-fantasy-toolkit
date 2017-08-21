@@ -3,20 +3,19 @@
 import time
 from selenium import webdriver
 from selenium.webdriver import PhantomJS
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from sys import argv
+# from sys import argv
 import click
 
 @click.command()
-@click.option('--days', type=int, prompt='Number of days to set active lineup', help='Number of days to set active lineup')
 @click.option('--username', prompt='Your Yahoo username', help='Your Yahoo account username')
 @click.option('--password', prompt='Your Yahoo password', help='Your Yahoo account password')
-@click.option('--teamname', prompt='Which team do you want to set active lineup for? Enter teamname', help='Your Fantasy basketball teamname')
-@click.option('--headless', type=bool, prompt='Do you want to run in headless mode? [True|False]', help='If True you won\'t see what\'s going on while it\'s running. If false you will see the browser render the steps.')
-def start_active_players(days, username, password, teamname, headless):
+@click.option('--days', type=int, default=7, prompt='Number of days to set active lineup', help='Number of days to set active lineup')
+@click.option('--headless', type=bool, default=True, prompt='Do you want to run in headless mode? [True|False]', help='If True you won\'t see what\'s going on while it\'s running. If false you will see the browser render the steps.')
+def start_active_players(username, password, days, headless):
 	"""Simple python program that sets your active players for the next number DAYS."""
 	print("Logging in as: " + username)
 
@@ -44,33 +43,28 @@ def start_active_players(days, username, password, teamname, headless):
 	# hov.perform()
 	# time.sleep(1)
 
-	print("current url", driver.current_url)
-	
-	teams = driver.find_elements_by_xpath("//div[@class='Grid-table']//a[@class='Block Fz-sm Phone-fz-xs Pbot-xs']")
-	teamnames = [team.text for team in teams]
-	print("Team Names",teamnames)
-
-	team_urls = [team.get_attribute("href") for team in teams]
-	print("Team URLs",team_urls)
-
-
+	# print("current url", driver.current_url)
 	leagues = driver.find_elements_by_xpath("//div[@class='Grid-table']//dd[@class='Grid-u D-i']//a[@class='F-reset']")
-	leaguenames = [league.text for league in leagues]
-	print("League Names",leaguenames)
+	league_names = [league.text for league in leagues]
+	teams = driver.find_elements_by_xpath("//div[@class='Grid-table']//a[@class='Block Fz-sm Phone-fz-xs Pbot-xs']")
+	team_urls = [team.get_attribute("href") for team in teams]
+	team_names = [team.text for team in teams]
 
-	league_urls = [league.get_attribute("href") for league in leagues]
-	print("League URLs",league_urls)
+	for leangue_name, team_name, team_url in zip(league_names, team_names, team_urls):
+		print("Starting active players league='{}', team='{}'".format(leangue_name, team_name))
+		driver.get(team_url)
 
-	# time.sleep(2)
+		time.sleep(2)
 
-	# for x in range(0, days):
+		for x in range(0, days):
+			date_text = driver.find_element_by_xpath("//span[@id='selectlist_nav']//a[@href='#']//span[@class='flyout-title']").text
+			print("Starting active players for: " + date_text)
 
-	# 	driver.find_element_by_xpath("//a[text() = 'Start Active Players']").click()
-	# 	time.sleep(2)
-	# 	date_text = driver.find_element_by_xpath("//span[@class='flyout-title']").text
-	# 	print("Starting active players for: " + date_text)
-	# 	driver.find_element_by_xpath("//a[contains(@class, 'Js-next')]").click()
-	# 	time.sleep(2)
+		# 	driver.find_element_by_xpath("//a[text() = 'Start Active Players']").click()
+		# 	time.sleep(2)
+
+			driver.find_element_by_xpath("//span[@id='selectlist_nav']//a[contains(@class, 'Js-next')]").click()
+			time.sleep(2)
 
 	driver.quit()
 

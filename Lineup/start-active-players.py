@@ -39,22 +39,38 @@ def start_active_players(days, username, password, teamname, headless):
 	time.sleep(8)
 
 	# hover to Fantasy Basketball to display the hidden dropdown menu 
-	teams = driver.find_element_by_xpath("//li[@class = 'Navitem Navitem-main Navitem-fantasy Va-top Fl-start Topstart']")
-	hov = ActionChains(driver).move_to_element(teams)
-	hov.perform()
-	time.sleep(1)
+	# teams = driver.find_element_by_xpath("//li[@class = 'Navitem Navitem-main Navitem-fantasy Va-top Fl-start Topstart']")
+	# hov = ActionChains(driver).move_to_element(teams)
+	# hov.perform()
+	# time.sleep(1)
 
-	driver.find_element_by_xpath("//a[text() = '"+ teamname +"']").click()
-	time.sleep(2)
+	print("current url", driver.current_url)
+	
+	teams = driver.find_elements_by_xpath("//div[@class='Grid-table']//a[@class='Block Fz-sm Phone-fz-xs Pbot-xs']")
+	teamnames = [team.text for team in teams]
+	print("Team Names",teamnames)
 
-	for x in range(0, days):
+	team_urls = [team.get_attribute("href") for team in teams]
+	print("Team URLs",team_urls)
 
-		driver.find_element_by_xpath("//a[text() = 'Start Active Players']").click()
-		time.sleep(2)
-		date_text = driver.find_element_by_xpath("//span[@class='flyout-title']").text
-		print("Starting active players for: " + date_text)
-		driver.find_element_by_xpath("//a[contains(@class, 'Js-next')]").click()
-		time.sleep(2)
+
+	leagues = driver.find_elements_by_xpath("//div[@class='Grid-table']//dd[@class='Grid-u D-i']//a[@class='F-reset']")
+	leaguenames = [league.text for league in leagues]
+	print("League Names",leaguenames)
+
+	league_urls = [league.get_attribute("href") for league in leagues]
+	print("League URLs",league_urls)
+
+	# time.sleep(2)
+
+	# for x in range(0, days):
+
+	# 	driver.find_element_by_xpath("//a[text() = 'Start Active Players']").click()
+	# 	time.sleep(2)
+	# 	date_text = driver.find_element_by_xpath("//span[@class='flyout-title']").text
+	# 	print("Starting active players for: " + date_text)
+	# 	driver.find_element_by_xpath("//a[contains(@class, 'Js-next')]").click()
+	# 	time.sleep(2)
 
 	driver.quit()
 

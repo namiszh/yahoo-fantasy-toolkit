@@ -1,29 +1,63 @@
 import csv
 from app import db
 
+
 class Team(db.Model):
-    id = db.Column(db.Integer, primary_key=True, index=True)
+    '''
+    Represents a team.
+    '''
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
-    league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True, index=True)
-    # records = db.relationship('Record', backref='team', lazy='dynamic')
+    league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True)
+    league = db.relationship('League', backref=db.backref('teams', lazy='dynamic'))
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('teams', lazy='dynamic'))
+
+    def __init__(self, team_id, team_name, league, user=None):
+        self.id = team_id
+        self.name = team_name
+        self.league = league
+        self.user = user
 
     def __repr__(self):
-        return '<Team id={}, name={}, league name={}>'.format(self.id, self.name, self.league.name)
+        username = 'Unkown'
+        if self.user:
+            username = self.user.name
+        return '<Team id={}, name={}, league name={}, belongs to {}>'.format(self.id, self.name, self.league.name, username)
 
 class League(db.Model):
-    id = db.Column(db.Integer, primary_key=True, index=True)
+    '''
+    Represents a league.
+    '''
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
-    my_team = db.Column(db.Integer)
-    teams = db.relationship('Team', backref='league', lazy='dynamic')
-    records = db.relationship('Record', backref='league', lazy='dynamic')
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
 
     def __repr__(self):
-        return '<League id={}, name={}, my team={}>'.format(self.id, self.name, self.my_team)
+        return '<League id={}, name={}>'.format(self.id, self.name)
 
+
+class User(db.Model):
+    '''
+    Represents a user playing yahoo fantasy basketball.
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return '<User id={}, user name={}>'.format(self.id, self.name)
+        
 
 class Record(db.Model):
     '''
-    Represents the data of a team for a week or the entire season.
+    Represents the data of a team for a week(week > 0) or the entire season (week=0).
     '''
     week = db.Column(db.Integer, primary_key=True)
     fg = db.Column(db.Float)
@@ -38,35 +72,25 @@ class Record(db.Model):
     to = db.Column(db.Integer)
     at = db.Column(db.Float)
 
-    league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    team = db.relationship('Team', backref=db.backref('records', lazy='dynamic'))
+
+    def __init__(self, week, fg, ft, pts, _3pm, oreb, reb, ast, stl, blk, to, at, team):
+        self.week = week
+        self.fg = fg
+        self.ft = ft
+        self.pts = pts
+        self._3pm = _3pm
+        self.oreb = oreb
+        self.reb  = reb 
+        self.ast  = ast 
+        self.stl  = stl 
+        self.blk  = blk 
+        self.to = to
+        self.at = at
+        self.team = team
 
     def __repr__(self):
         return '<Week={}, league={}, team={}, fg={}, ft={}, pts={}, 3pm={}, oreb={}, reb={}, ast={}, stl={}, blk={}, to={}, at={}>'.format(self.week,
-            self.league.name, self.team_id, self.fg, self.ft, self.pts, self._3pm, self.oreb, self.reb, self.ast, self.stl, self.blk, self.to, self.at)
+            self.team.league.name, self.team.name, self.fg, self.ft, self.pts, self._3pm, self.oreb, self.reb, self.ast, self.stl, self.blk, self.to, self.at)
 
-
-#     def _ReadFromCSV(league_name, team_name, week):
-#         if week == 0:
-#             csv_file_name = '{}_all'.format(league_name)
-#         else:
-#             csv_file_name = '{}_week{}'.format(league_name, week)
-
-#             with open(csv_file_name, 'r') as csvfile:
-#                 reader = csv.DictReader(csvfile)
-#                 for row in reader:
-#                     if row['Team Name'] = team_name:
-#                         pass
-
-# class Team(db.Model):
-#     id = db.Column(db.Integer, primary_key = True)
-#     body = db.Column(db.String(140))
-#     timestamp = db.Column(db.DateTime)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-#     def __repr__(self):
-#         return '<Post %r>' % (self.body)
-
-
-# class League() :
-#     pass

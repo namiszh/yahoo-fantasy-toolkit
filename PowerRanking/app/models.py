@@ -6,16 +6,17 @@ class Team(db.Model):
     '''
     Represents a team.
     '''
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True) 
+    idx = db.Column(db.Integer)     # the team index in the league
     name = db.Column(db.String(120))
-    league_id = db.Column(db.Integer, db.ForeignKey('league.id'), primary_key=True)
+    league_id = db.Column(db.Integer, db.ForeignKey('league.id'))
     league = db.relationship('League', backref=db.backref('teams', lazy='dynamic'))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref=db.backref('teams', lazy='dynamic'))
 
-    def __init__(self, team_id, team_name, league, user=None):
-        self.id = team_id
+    def __init__(self, team_idx, team_name, league, user=None):
+        self.idx = team_idx
         self.name = team_name
         self.league = league
         self.user = user
@@ -24,7 +25,7 @@ class Team(db.Model):
         username = 'Unkown'
         if self.user:
             username = self.user.name
-        return '<Team id={}, name={}, league name={}, belongs to {}>'.format(self.id, self.name, self.league.name, username)
+        return '<Team id={}, idx={}, name={}, league name={}, belongs to {}>'.format(self.id, self.idx, self.name, self.league.name, username)
 
 class League(db.Model):
     '''
@@ -72,7 +73,7 @@ class Record(db.Model):
     to = db.Column(db.Integer)
     at = db.Column(db.Float)
 
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), primary_key=True)
     team = db.relationship('Team', backref=db.backref('records', lazy='dynamic'))
 
     def __init__(self, week, fg, ft, pts, _3pm, oreb, reb, ast, stl, blk, to, at, team):

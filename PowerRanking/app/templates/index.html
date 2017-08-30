@@ -27,6 +27,7 @@
                 </ul>
             </div>
             <div id="header-user">
+                {% if g.user.is_authenticated %}
                 <div class="dropdown">
                     <a class="btn btn-sm dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-label="View profile and more" aria-haspopup="true" aria-expanded="false">
                         <img alt="@namiszh" class="avatar" src="../static/image/user-avatar.png" height="30" width="30">
@@ -39,18 +40,21 @@
                         <li><a href="#">Reload Data (2 weeks)</a></li>
                         <li><a href="#">Reload Data (season)</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Sign Out</a></li>
+                        <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
                     </ul>
                 </div>
+                {% else %}
+                <a>Sign In</a> 
+                {% endif %}
             </div>
         </div>
     </div>
     <div class="container">
         <div id="top-nav">
             <ul>
-                <li><a href="{{ url_for('.league', league_id=1) }}">信你邪<br>Alpha 2017 -2018</a></li>
-                <li><a href="{{ url_for('.league', league_id=2) }}">邪大师<br>New Beginning</a></li>
-                <li><a href="{{ url_for('.league', league_id=3) }}">真邪门<br>Never Ending</a></li>
+                {% for user_team in user_teams %}
+                <li><a href="{{ url_for('.league', league_id=user_team[2]) }}">{{user_team[0]}}<br>{{user_team[1]}}</a></li>
+                {% endfor %}
             </ul>
             <p id="show-type">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
         </div>
@@ -63,7 +67,7 @@
                 {% if status.type == 0 %}
                 第{{status.current_week}}周
                 {% else %}
-                {{teams[status.current_team-1]}}
+                {{league_teams[status.current_team-1]}}
                 {% endif %}
                 <h2/>
                 {% if result != None %}

@@ -10,8 +10,8 @@
     <h1 class="sidebar-title">Teams</h1>
     <ul id="teams">
         <br>
-        {% for team in teams %}
-        {% if loop.index0+1==status.current_team %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.team', league_id=status.current_league, team_id=loop.index0+1) }}">{{team}}</a></li> 
+        {% for team in league_teams %}
+        {% if team[1]==status.current_team %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.team', league_id=status.current_league, team_id=team[1]) }}">{{team[0]}}</a></li> 
         {% endfor %}
     </ul>
 {% endif %}

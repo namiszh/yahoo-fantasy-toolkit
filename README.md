@@ -59,12 +59,12 @@ This is a web app that shows the power ranking for your leagues.
 ## To-Do
 
 **Draft Analysis**
-- [*] Scrape projection data from web
+- [x] Scrape projection data from web
 - [ ] Get project data from more websites
 - [ ] Real Time Draft
 
 **LineUp**
-- [ ] Start active player for all leagues
+- [x] Start active player for all leagues
 - [ ] Log bench players if they have match on that day. Useful for big match day.
 
 **Power Ranking**

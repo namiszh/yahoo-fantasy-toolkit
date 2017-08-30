@@ -75,3 +75,14 @@ records = Record.query.all()
 for record in records:
     print (record)
 
+
+print("league teams")
+league_teams = Team.query.filter(Team.league_id==573).order_by(Team.idx).all()
+league_team_names = [team.name for team in league_teams]
+print(league_team_names)
+
+print("user teams")
+user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='husthsz').order_by(Team.league_id).all()
+user_teams = [[team.name, team.league.name, team.league.id] for team in user_team_records ]
+print(user_teams)
+

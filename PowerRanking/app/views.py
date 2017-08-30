@@ -5,20 +5,31 @@
     :copyright: (c) 2017 by Marvin Huang
 """
 
-from flask import render_template, redirect, url_for, request
+from flask import render_template, flash, redirect, session, url_for, request, g
+from flask_login import login_user, logout_user, current_user, login_required
 import pandas as pd
-from bokeh.charts import Histogram
-from bokeh.embed import components
-from app import app, status
+# from bokeh.charts import Histogram
+# from bokeh.embed import components
+from datetime import datetime
+from app import app, db, lm, oid, status
+from .models import User, Team, League, Record
+from .forms import LoginForm
 from .compute import compute_png_svg as compute
 from .compute import get_week_score_png
+from .scrape import scrape_user_teams
 
 @app.route('/')
 @app.route('/index')
+# @login_required
 def index():
-    # goto current league
+
+    user = User.query.filter_by(name='YourYahooAccount').first()
+    if user is None:
+        scrape_user_teams('YourYahooAccount', 'YourYahoopassword')
+
     url = url_for('league', league_id=status.current_league)
-    return redirect(url)
+    return redirect(url,)
+
 
 @app.route('/type=<int:type_id>')
 def type(type_id):
@@ -51,34 +62,23 @@ def team(league_id, team_id):
     each category (PTS, AST...) has a curve
     '''
     status.current_league = league_id
+    print("league id", league_id)
     status.type = 1
     status.current_team = team_id
 
-    teams = [
-        "B3-Jordan",
-        "B1-pippo",
-        "A5-Gray Potato",
-        "A3-Marsmnky",
-        "C5-unbe",
-        "B4-????????",
-        "xiuxian",
-        "C3-??????",
-        "D5 - ????",
-        "C4-lebronjames",
-        "C1-Lydia",
-        "D4-????",
-        "10,000.00",
-        "A2-??????????",
-        "A4-??????",
-        "C2-Stephen",
-        "D3 - ?U?U",
-        "D1-????",
-        "B2-Sin",
-        "B5-dragonball"
-    ]
+    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='YourYahooAccount').order_by(Team.league_id).all()
+    user_teams = [[team.name, team.league.name, team.league.id] for team in user_team_records ]
+    print(user_teams)
+
+    league_team_records = Team.query.filter(Team.league_id==league_id).order_by(Team.name).all()
+    league_teams = [ [team.name, team.id] for team in league_team_records]
 
     figdata_png = compute()
-    return render_template('index.html', status=status, teams=teams, result=figdata_png)
+    return render_template('index.html', 
+        status=status, 
+        user_teams = user_teams,
+        league_teams=league_teams, 
+        result=figdata_png)
 
 
 @app.route('/lid=<int:league_id>/week=<int:week>')
@@ -97,9 +97,16 @@ def week(league_id, week):
         week = status.max_week
     status.current_week = week
 
+    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='YourYahooAccount').order_by(Team.league_id).all()
+    user_teams = [[team.name, team.league.name, team.league.id] for team in user_team_records ]
+    print(user_teams)
+
     figdata_png = get_week_score_png(league_id, week)
 
-    return render_template('index.html', status=status, result=figdata_png)
+    return render_template('index.html', 
+        status=status, 
+        user_teams = user_teams,
+        result=figdata_png)
 
 # @app.route("/chart")
 # def chart():
@@ -163,3 +170,68 @@ def week(league_id, week):
 #     script, div = components(plot)
 #     return render_template("bokeh.html", script=script, div=div,
 #         feature_names=feature_names,  current_feature_name=current_feature_name)
+
+# @app.route('/login', methods=['GET', 'POST'])
+# @oid.loginhandler
+# def login():
+#     # if g.user is not None and g.user.is_authenticated:
+#     #     return redirect(url_for('index'))
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#             flash('Login requested for OpenID="%s", remember_me=%s' %
+#                   (form.openid.data, str(form.remember_me.data)))
+#             return redirect('/index')
+#     return render_template('login.html', 
+#                            form=form,
+#                            providers=app.config['OPENID_PROVIDERS'])
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+    print("g.user:", g.user)
+    # if g.user is not None and g.user.is_authenticated:
+    #     return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['remember_me'] = form.remember_me.data
+        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+    return render_template('login.html', 
+                           form=form,
+                           providers=app.config['OPENID_PROVIDERS'])
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+        
+@app.before_request
+def before_request():
+    g.user = current_user
+    print(g.user)
+    # if g.user.is_authenticated:
+    #     g.user.last_seen = datetime.utcnow()
+    #     db.session.add(g.user)
+    #     db.session.commit()
+
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+@oid.after_login
+def after_login(resp):
+    if resp.email is None or resp.email == "":
+        flash('Invalid login. Please try again.')
+        return redirect(url_for('login'))
+    user = User.query.filter_by(email=resp.email).first()
+    if user is None:
+        nickname = resp.nickname
+        if nickname is None or nickname == "":
+            nickname = resp.email.split('@')[0]
+        nickname = User.make_unique_nickname(nickname)
+        user = User(nickname=nickname, email=resp.email)
+        db.session.add(user)
+        db.session.commit()
+    remember_me = False
+    if 'remember_me' in session:
+        remember_me = session['remember_me']
+        session.pop('remember_me', None)
+    login_user(user, remember = remember_me)
+    return redirect(request.args.get('next') or url_for('index'))

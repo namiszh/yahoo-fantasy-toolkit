@@ -53,7 +53,7 @@
         <div id="top-nav">
             <ul>
                 {% for user_team in user_teams %}
-                <li><a href="{{ url_for('.league', league_id=user_team[2]) }}">{{user_team[0]}}<br>{{user_team[1]}}</a></li>
+                {% if user_team[2]==status.current_league %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.league', league_id=user_team[2]) }}">{{user_team[0]}}<br>{{user_team[1]}}</a></li>
                 {% endfor %}
             </ul>
             <p id="show-type">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
@@ -63,11 +63,21 @@
                 {% include 'sidebar.html' %}
             </div>
             <div id="main-content">
-                <h2 align="center">第{{status.current_league}}盟
+                <h2 align="center">
+                {% for user_team in user_teams %}
+                    {% if user_team[2]==status.current_league %}
+                        {{user_team[1]}}
+                    {% endif %}
+                {% endfor %}
+
                 {% if status.type == 0 %}
-                第{{status.current_week}}周
+                    第{{status.current_week}}周战力榜
                 {% else %}
-                {{league_teams[status.current_team-1]}}
+                    {% for league_team in league_teams %}
+                        {% if league_team[1]==status.current_team %}
+                            - {{league_team[0]}}
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
                 <h2/>
                 {% if result != None %}

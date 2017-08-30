@@ -37,7 +37,7 @@ def scrape_user_teams(username, password):
     # add user to db
     user = User.query.filter_by(name=username).first()
     if user is None:
-        print('adding user {} to db.'.format(username))
+        # print('adding user {} to db.'.format(username))
         user = User(username)
         db.session.add(user)
     status.username = username
@@ -68,36 +68,41 @@ def scrape_user_teams(username, password):
             status.current_league = league_id
             status.current_team = user_team_idx
 
-        # add league to db
+        # add league to db or update league name in case league changes
         league = League.query.get(league_id)
         if league is None:
-            # go to league url
-            print('redirecting to ', league_url)
-            driver.get(league_url)
-
-            # wait until the standing tab present
-            WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "leaguestandingstabs")))
-
-            # click 'Schedule', we will get teams in the schedule table
-            driver.find_element_by_link_text('Schedule').click()
-            WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "schedsubnav")))
-            leagueTeamElements = driver.find_elements_by_xpath("//ul[@id='schedsubnav']//li[contains(@class,'Navitem')]")
-
+            # print('adding league {} to db.'.format(league_name))
             league = League(league_id, league_name)
-            print('adding league {} to db.'.format(league_name))
             db.session.add(league)
+        else:
+            league.name = league_name
 
-            for idx, teamElement in enumerate(leagueTeamElements):
-                team_name = teamElement.text
-                print("adding team {} to db.".format(team_name))
-                team = Team(idx+1, team_name, league)
+        # go to league url to get team info
+        # print('redirecting to ', league_url)
+        driver.get(league_url)
+
+        # wait until the standing tab present
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "leaguestandingstabs")))
+
+        # click 'Schedule', we will get teams in the schedule table
+        driver.find_element_by_link_text('Schedule').click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "schedsubnav")))
+        leagueTeamElements = driver.find_elements_by_xpath("//ul[@id='schedsubnav']//li[contains(@class,'Navitem')]")
+
+        for idx, teamElement in enumerate(leagueTeamElements, start=1):
+            team_name = teamElement.text
+            team = Team.query.filter_by(league_id=league_id, idx=idx).first()
+            if team is None:
+                # print("adding team {} to db.".format(team_name))
+                team = Team(idx, team_name, league)
                 db.session.add(team)
+            else:
+                team.name = team_name
 
-        # update team user
-        user_team = Team.query.filter_by(league_id=league_id, idx=user_team_idx).first()
-        if user_team:
-            print('updating user to {} for team {}'.format(username, user_team))
-            user_team.user = user
+            # update team user
+            if idx==user_team_idx:
+                # print('updating user to {} for team {}'.format(username, user_team))
+                team.user = user
 
     db.session.commit()
 
@@ -115,4 +120,4 @@ if __name__ == '__main__':
     db.session.remove()
     db.drop_all()
     db.create_all()
-    scrape_user_teams('YourYahooAccount', 'YourYahoopassword')
+    scrape_user_teams('husthsz', 'Xiaom!613')

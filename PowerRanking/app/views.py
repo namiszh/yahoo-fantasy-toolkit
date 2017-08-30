@@ -23,9 +23,9 @@ from .scrape import scrape_user_teams
 # @login_required
 def index():
 
-    user = User.query.filter_by(name='YourYahooAccount').first()
+    user = User.query.filter_by(name='husthsz').first()
     if user is None:
-        scrape_user_teams('YourYahooAccount', 'YourYahoopassword')
+        scrape_user_teams('husthsz', 'Xiaom!613')
 
     url = url_for('league', league_id=status.current_league)
     return redirect(url,)
@@ -66,7 +66,7 @@ def team(league_id, team_id):
     status.type = 1
     status.current_team = team_id
 
-    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='YourYahooAccount').order_by(Team.league_id).all()
+    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='husthsz').order_by(Team.league_id).all()
     user_teams = [[team.name, team.league.name, team.league.id] for team in user_team_records ]
     print(user_teams)
 
@@ -97,7 +97,7 @@ def week(league_id, week):
         week = status.max_week
     status.current_week = week
 
-    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='YourYahooAccount').order_by(Team.league_id).all()
+    user_team_records = Team.query.join(User, (User.id == Team.user_id)).filter(User.name=='husthsz').order_by(Team.league_id).all()
     user_teams = [[team.name, team.league.name, team.league.id] for team in user_team_records ]
     print(user_teams)
 

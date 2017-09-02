@@ -13,17 +13,20 @@
     :copyright: (c) 2017 by HuangShaozuo.
 """
 
-import csv
-import time
-import click
 from bs4 import BeautifulSoup
 from scipy import stats
 from selenium import webdriver
 from selenium.webdriver import PhantomJS
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+import click
+import csv
+import time
 
 # the web site 'basketballmonster' need to be paid member to view the projection 
 BB_USER_NAME='yourbasketballmonserusername'
@@ -81,82 +84,64 @@ class PriceEvaluator() :
         print("visiting https://basketballmonster.com")
         driver.get('https://basketballmonster.com/')
 
+        delay = 8
         # login
         print("login with user name", BB_USER_NAME)
         loginElement = driver.find_element_by_link_text('Login').click()
-        # time.sleep(5)
-        usernameElement = driver.find_element_by_id('ContentPlaceHolder1_UsernameTextBox')
+        usernameElement = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_UsernameTextBox")))
         usernameElement.send_keys(Keys.CONTROL + "a") # ctr + a to select existing, thus we can override (not append) it
         usernameElement.send_keys(BB_USER_NAME)
         passwordElement = driver.find_element_by_id('ContentPlaceHolder1_PasswordTextBox')
         passwordElement.send_keys(Keys.CONTROL + "a") # ctr + a to select existing, thus we can override (not append) it
         passwordElement.send_keys(BB_PASSWORD)
         driver.find_element_by_id('ContentPlaceHolder1_LoginButton').click()
-        # time.sleep(5)
 
-        # after login, the page will redirect to main, now go to league settings
-        # hover to Fantasy Basketball to display the hidden dropdown menu 
-        settings = driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[7]/a')
-        hov = ActionChains(driver).move_to_element(settings)
-        hov.perform()
-        # time.sleep(1)
-
-        print("league setting on https://basketballmonster.com/LeagueSettings.aspx")
-        driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[7]/ul/li[1]/a').click()
-        teamNumElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_NumberOfTeamsTextBox')
-        teamNumElement.send_keys(Keys.CONTROL + "a")
-        teamNumElement.send_keys(self.team_num)
-        teamPlayerElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_NumberOfPlayersTextBox')
-        teamPlayerElement.send_keys(Keys.CONTROL + "a")
-        teamPlayerElement.send_keys(self.player_num_per_team)
-        salaryCapElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_DollarsForPlayersTextBox')
-        salaryCapElement.send_keys(Keys.CONTROL + "a")
-        salaryCapElement.send_keys(self.salary_cap_per_team)
-        oneDollarPlayerElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_OneDollarTextBox')
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "RankingsMenu")))
+        # driver.get('https://basketballmonster.com/LeagueSettings.aspx')
         
-        oneDollarPlayerElement.send_keys(Keys.CONTROL + "a")
+        # teamNumElement = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ContentPlaceHolder1_LeagueSizeUserControl1_NumberOfTeamsTextBox")))
+        # teamNumElement.send_keys(Keys.CONTROL + "a")
+        # teamNumElement.send_keys(self.team_num)
+        # teamPlayerElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_NumberOfPlayersTextBox')
+        # teamPlayerElement.send_keys(Keys.CONTROL + "a")
+        # teamPlayerElement.send_keys(self.player_num_per_team)
+        # salaryCapElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_DollarsForPlayersTextBox')
+        # salaryCapElement.send_keys(Keys.CONTROL + "a")
+        # salaryCapElement.send_keys(self.salary_cap_per_team)
+        # oneDollarPlayerElement = driver.find_element_by_id('ContentPlaceHolder1_LeagueSizeUserControl1_OneDollarTextBox')
+        # oneDollarPlayerElement.send_keys(Keys.CONTROL + "a")
 
-        # basketball monster the number of $1 dollar player is per team.
-        # the number of $1 dollar player in this class it total
-        oneDollarPlayerElement.send_keys(self.one_dollar_player_num // self.player_num_per_team)
-        oneDollarPlayerElement.send_keys(Keys.RETURN)
+        # # basketball monster the number of $1 dollar player is per team.
+        # # the number of $1 dollar player in this class it total
+        # oneDollarPlayerElement.send_keys(self.one_dollar_player_num // self.player_num_per_team)
+        # oneDollarPlayerElement.send_keys(Keys.RETURN)
 
-        # make 'offense rebound' and 'assist to turnovers' active
-        driver.find_element_by_xpath('//input[@name="CATGROUP:10"][@id="ON"]').click()
-        driver.find_element_by_xpath('//input[@name="CATGROUP:29"][@id="ON"]').click()
-        driver.find_element_by_id('ContentPlaceHolder1_SaveSettingsButton').click()
-        # time.sleep(5)
+        # # make 'offense rebound' and 'assist to turnovers' active
+        # driver.find_element_by_xpath('//input[@name="CATGROUP:10"][@id="ON"]').click()
+        # driver.find_element_by_xpath('//input[@name="CATGROUP:29"][@id="ON"]').click()
+        # driver.find_element_by_xpath('//*[@id="form1"]/div[6]/div[1]/input[1]').click()
 
-         # use 2016 player ranking to test for now, will change to projection when it is available
-        rankings = driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[2]/a')
-        hov = ActionChains(driver).move_to_element(rankings)
-        hov.perform()
-        print("redirect to https://basketballmonster.com/PlayerRankings.aspx")
-        driver.find_element_by_xpath('//*[@id="cssmenu"]/ul/li[2]/ul/li[1]/a').click()
-        # driver.get('https://basketballmonster.com/PlayerRankings.aspx')
+        driver.get('https://basketballmonster.com/Projections.aspx')
 
          # player filter set to "all players"
-        driver.find_element_by_id('ContentPlaceHolder1_PlayerFilterUserControl1_PlayerFilterRadioButtonList_1').click()
-        # make sure value column will be displayed
-        valueElement = driver.find_element_by_id('ContentPlaceHolder1_ShowOptionsUserControl1_ValuesCheckBoxList_0')
-        checked = valueElement.is_selected();
-        if not checked:
-            valueElement.click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[3]/div[1]/label[2]'))).click()
 
         # set value type to 'total value'
         print("get total value ranking")
-        driver.find_element_by_id('ContentPlaceHolder1_ValueTypeUserControl1_ValueTypeRadioButtonList_0').click()
-        driver.find_element_by_id('ContentPlaceHolder1_GetRankingsButton').click()
-        # time.sleep(5)
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[4]/div[2]/label[1]'))).click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]'))).click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[6]/input'))).click()
+        time.sleep(8)
         totalContent = driver.page_source
 
         print("get per game value ranking")
-        driver.find_element_by_id('ContentPlaceHolder1_ValueTypeUserControl1_ValueTypeRadioButtonList_1').click()
-        driver.find_element_by_id('ContentPlaceHolder1_GetRankingsButton').click()
-        # time.sleep(5)
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[4]/div[2]/label[2]'))).click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]'))).click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[6]/input'))).click()
+        time.sleep(8)
         perGameContent = driver.page_source
         
-        driver.quit()
+        # driver.quit()
 
         return totalContent, perGameContent
 
@@ -166,7 +151,7 @@ class PriceEvaluator() :
         Get the projection data (name, value) for each player.
         """
         soup = BeautifulSoup(page_source, "html.parser")
-        rows = soup.find('table', class_='gridT gridThighlight data-font').findAll('tr')
+        rows = soup.find('table', class_='datatable').findAll('tr')
         print("There are ", len(rows), "rows in the data table")
         player_data = [row for row in rows if row.find('td')]  # skip header rows
         print("There are ", len(player_data), "players in the data table")
@@ -177,9 +162,11 @@ class PriceEvaluator() :
         names = []
         values = []
 
-        for x in player_data:
+        for i, x in enumerate( player_data):
             name = x[1]
             value = float(x[0])
+            if i == 0:
+                print(name, ":", value)
             names.append(name)
             values.append(value)
 
@@ -189,7 +176,8 @@ class PriceEvaluator() :
     def _evaluate_player_prices(self, rawValues):
 
         # user standard score, not raw score to evaluate price
-        zScores = stats.zscore(rawValues)
+        # zScores = stats.zscore(rawValues)
+        zScores = rawValues
 
         total_player_num = self.team_num * self.player_num_per_team
         total_salary_cap = self.team_num * self.salary_cap_per_team

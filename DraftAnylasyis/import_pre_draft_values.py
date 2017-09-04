@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-# from bs4 import BeautifulSoup
 from pandas import DataFrame
 from selenium import webdriver
 from selenium.webdriver import PhantomJS
@@ -68,7 +67,7 @@ def import_player_values(u, p, l, f, h):
         match_league_id = int(match.group(1))
         if match_league_id == l:
             pre_draft_value_url = user_team_url + '/prerank_auction_costs'
-            print('find pre draft value setting url {} for league id={}'.format(pre_draft_value_url, l))
+            print('set pre draft values in {}'.format(pre_draft_value_url))
             break
 
     if pre_draft_value_url is None:
@@ -83,45 +82,81 @@ def import_player_values(u, p, l, f, h):
     # the player sequence would be changed.
     # While the players are displayed in many pages, changing the player sequence could miss some player while goto next page.
     driver.find_element_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//thead//tr//th[contains(@class, "player")]//div//a').click()
-    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ysf-preauctioncosts-dt")))
 
-    playerElements  = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "player")]//div//div//a')
-    valueElements   = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "tac")]//div//input[@type="text"]')
-    excludeElements = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "tpx")]//input[@type="checkbox"]')
-    for playerElement, valueElement, excludeElement in zip(playerElements, valueElements, excludeElements):
-        player_name = playerElement.text.replace(".", "")  # C.J. McCollum  -> CJ McCollum
-        player_value = int(valueElement.get_attribute("value"))
-        if player_name not in player_values:
-            print('***** Cannot find player {} in csv data file *****'.format(player_name))
-        else:
-            new_value = player_values[player_name]
-            if player_value != new_value:
+    hasNextPage = True
 
-                selected = excludeElement.is_selected();
+    while hasNextPage:
+        hasNextPage = False
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ysf-preauctioncosts-dt")))
 
-                # if new value is zero, original value is not zero.
-                # Since set value to zero is not allowed in yahoo,
-                # we can exclude this player.
-                if new_value == 0:
-                    if not selected:
-                        ActionChains(driver).move_to_element(excludeElement).click().perform()
-                        # excludeElement.click();
-                        print("----- Exclude player {} -----".format(player_name))
-                else:
-                    # make sure not selected thus we can input new value
-                    if selected:
-                        ActionChains(driver).move_to_element(excludeElement).click().perform()
-                        WebDriverWait(driver, delay).until(EC.visibility_of(valueElement))
-                    valueElement.send_keys(Keys.CONTROL + "a") # ctr + a to select existing, thus we can override (not append) it
-                    valueElement.send_keys(new_value)
-                    print("##### Value changed from {:3d} to {:3d} for player {} #####".format(player_value, new_value, player_name))
+        changed = False
+        playerElements  = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "player")]//div//div//a')
+        valueElements   = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "tac")]//div//input[@type="text"]')
+        excludeElements = driver.find_elements_by_xpath('//table[@id="ysf-preauctioncosts-dt"]//tbody//tr//td[contains(@class, "tpx")]//input[@type="checkbox"]')
+        for playerElement, valueElement, excludeElement in zip(playerElements, valueElements, excludeElements):
+            # print(playerElement.text, valueElement.get_attribute("value"))
+            player_name = playerElement.text.replace(".", "")  # C.J. McCollum  -> CJ McCollum
+
+            try:
+                player_value = int(valueElement.get_attribute("value").strip())
+            except Exception as e:
+                print("~~~~~~~~~~~~~~~~cannot convert to int", valueElement.get_attribute("value").strip())
+
+            if player_name not in player_values:
+                print('***** Cannot find player {} in csv data file *****'.format(player_name))
             else:
-                print("===== Value kept unchanged as {:3d} for player {} =====".format(player_value, player_name))
-    # save
-    saveElement = driver.find_element_by_id('ysf-preauctioncosts-save')
-    ActionChains(driver).move_to_element(saveElement).click().perform()
+                new_value = player_values[player_name]
+                if player_value != new_value:
 
-    time.sleep(600)
+                    selected = excludeElement.is_selected();
+
+                    # if new value is zero, original value is not zero.
+                    # Since set value to zero is not allowed in yahoo,
+                    # we can exclude this player.
+                    if new_value == 0:
+                        if not selected:
+                            changed = True
+                            ActionChains(driver).move_to_element(excludeElement).click().perform()
+                            print("----- Exclude player {:25} -----".format(player_name))
+                    else:
+                        changed = True
+                        # make sure not selected thus we can input new value
+                        if selected:
+                            ActionChains(driver).move_to_element(excludeElement).click().perform()
+                            WebDriverWait(driver, delay).until(EC.visibility_of(valueElement))
+                        valueElement.send_keys(Keys.CONTROL + "a") # ctr + a to select existing, thus we can override (not append) it
+                        valueElement.send_keys(new_value)
+                        print("##### Value changed from {:3} to {:3} for {:25} #####".format(player_value, new_value, player_name))
+                else:
+                    print("===== Value kept unchanged as {:3} for {:25} =====".format(player_value, player_name))
+        # save
+        if changed:
+            saveElement = WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.ID, 'ysf-preauctioncosts-save')))
+            hov = ActionChains(driver).move_to_element(saveElement)
+            hov.perform()
+            time.sleep(2)
+            ActionChains(driver).move_to_element(saveElement).click(saveElement).perform()
+            print("............... Save changes ...............")
+
+        try:
+            nextPageElement = WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Next >')))
+            hov = ActionChains(driver).move_to_element(nextPageElement)
+            hov.perform()
+            time.sleep(2)
+            ActionChains(driver).move_to_element(nextPageElement).click(nextPageElement).perform()
+            hasNextPage = True
+            print('............... Go to next page ...............')
+        except Exception as e:
+            hasNextPage = False
+            print('............... No more pages now ...............')
+
+    sortByValueElement = WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.LINK_TEXT, 'My Value')))
+    hov = ActionChains(driver).move_to_element(sortByValueElement)
+    hov.perform()
+    time.sleep(2)
+    ActionChains(driver).move_to_element(sortByValueElement).click(sortByValueElement).perform()
+
+    time.sleep(60)
     driver.quit()
 
 

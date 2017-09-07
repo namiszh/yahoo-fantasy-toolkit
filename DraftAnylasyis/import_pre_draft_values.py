@@ -96,11 +96,7 @@ def import_player_values(u, p, l, f, h):
         for playerElement, valueElement, excludeElement in zip(playerElements, valueElements, excludeElements):
             # print(playerElement.text, valueElement.get_attribute("value"))
             player_name = playerElement.text.replace(".", "")  # C.J. McCollum  -> CJ McCollum
-
-            try:
-                player_value = int(valueElement.get_attribute("value").strip())
-            except Exception as e:
-                print("~~~~~~~~~~~~~~~~cannot convert to int", valueElement.get_attribute("value").strip())
+            player_value = int(valueElement.get_attribute("value").strip())
 
             if player_name not in player_values:
                 print('***** Cannot find player {} in csv data file *****'.format(player_name))
@@ -155,6 +151,7 @@ def import_player_values(u, p, l, f, h):
     hov.perform()
     time.sleep(2)
     ActionChains(driver).move_to_element(sortByValueElement).click(sortByValueElement).perform()
+    print('............... Finished importing pre draft values ...............')
 
     time.sleep(60)
     driver.quit()

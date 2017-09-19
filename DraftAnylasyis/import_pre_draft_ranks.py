@@ -19,16 +19,23 @@ import time
 @click.option('--p', hide_input=True, prompt='Your Yahoo password', help='Your Yahoo account password')
 @click.option('--l', type=int, prompt='Your yahoo league id', help='Your yahoo league id')
 @click.option('--f', prompt='your player value csv file', help='your player value csv file')
+@click.option('--n', type=int, default=300, prompt='The number of players you\'d like to rank', help='top number players you\' like to rank')
 @click.option('--h', type=bool, default=True, prompt='Do you want to run in headless mode? [True|False]', help='If True you won\'t see what\'s going on while it\'s running. If false you will see the browser render the steps.')
-def import_player_ranks(u, p, l, f, h):
+def import_player_ranks(u, p, l, f, n, h):
     """Given a csv file that has player values, Set pre draft player values for a yahoo fantasy basketball league."""
 
     # read player values from csv file.
     print('reading player ranks from csv file...')
     df = pd.read_csv(f, encoding = "ISO-8859-1")
+    player_list = []
     names = df[df.columns[0]].tolist()
-    player_list = [name.replace(".", "") for name in names]
-    # print(player_list)
+    for name in names:
+        name = name.replace(".", "")     # C.J. McCollum  -> CJ McCollum
+        name = name.replace(",", "")    # Dennis Smith, Jr.
+        match = re.search(r'^(\S+\s\S+)(\s\S+)*$', name) # Larry Nance Jr. -> Larry Nance, Glen Robinson III -> Glen Robinson
+        name = match.group(1)
+        # print(name)
+        player_list.append(name)
 
     # get selenium web driver
     if h:
@@ -104,24 +111,41 @@ def import_player_ranks(u, p, l, f, h):
 
     name_to_ele_map = {}
     for plyaerEle, plusEle in zip(playerElements, plusElements):
-        player_name = plyaerEle.text.replace(".", "")  # C.J. McCollum  -> CJ McCollum
+        player_name = plyaerEle.text.replace(".", "")   # C.J. McCollum  -> CJ McCollum
+        player_name = player_name.replace(",", "")  # Dennis Smith, Jr.
+        match = re.search(r'^(\S+\s\S+)(\s\S+)*$', player_name) # Larry Nance Jr. -> Larry Nance, Glen Robinson III -> Glen Robinson
+        player_name = match.group(1)
         # print(player_name)
         name_to_ele_map[player_name] = plusEle
 
     print('Set player ranks...')
-    for i, player_name in enumerate(player_list):
+    for i, player_name in enumerate(player_list, start = 1):
+
+        # just need to rank the top n players
+        if i>n:
+            break
+
+        # special cases
         if player_name not in name_to_ele_map:
-            if i == 0:
+            if player_name == 'Guillermo Hernangomez':
+                player_name = 'Willy Hernangomez'
+            elif player_name == 'Juan Hernangomez':
+                player_name = 'Juancho Hernangomez'
+            elif player_name == 'Moe Harkless':
+                player_name = 'Maurice Harkless'
+                
+        if player_name not in name_to_ele_map:
+            if i == 1:
                 print('***** Cannot find player {} in the table, please check the name and add it to the top manually *****'.format(player_name))
             else:
-                print('***** Cannot find player {} in the table, please check the name and add it to the #{} position, just after {} *****'.format(player_name, i+1, player_list[i-1]))
+                print('***** Cannot find player {} in the table, please check the name and add it to the #{} position, just after {} *****'.format(player_name, i, player_list[i-2]))
+            continue
 
-        else:
-            webEle = name_to_ele_map[player_name]
-            hov = ActionChains(driver).move_to_element(webEle)
-            hov.perform()
-            # time.sleep(2)
-            ActionChains(driver).move_to_element(webEle).click(webEle).perform()
+        webEle = name_to_ele_map[player_name]
+        hov = ActionChains(driver).move_to_element(webEle)
+        hov.perform()
+        # time.sleep(2)
+        ActionChains(driver).move_to_element(webEle).click(webEle).perform()
 
     # save result
     WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'submit-editprerank'))).click()

@@ -29,11 +29,17 @@ def import_player_values(u, p, l, f, h):
     prices = df[df.columns[1]].tolist()
     player_values = {}
     for name, price in zip(names, prices):
+<<<<<<< HEAD
         name = name.replace(".", "")     # C.J. McCollum  -> CJ McCollum
         name = name.replace(",", "")    # Dennis Smith, Jr.
         match = re.search(r'^(\S+\s\S+)(\s\S+)*$', name) # Larry Nance Jr. -> Larry Nance, Glen Robinson III -> Glen Robinson
         name = match.group(1)
         player_values[name] = int(price)
+=======
+        # in case name is different: for example, some website is 'C.J. McCollum', others it 'CJ McCollum'
+        # so we unify the name 
+        player_values[name.replace(".", "")] = int(price)
+>>>>>>> 56d279f75dab95ceba4067ab0d1c95b441b4f1b8
 
     # get selenium web driver
     if h:

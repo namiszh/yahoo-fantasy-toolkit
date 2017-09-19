@@ -11,3 +11,4 @@ __pycache__/
 
 *.db
 DraftAnylasyis/*.csv
+PowerRanking/db_repository/*.*

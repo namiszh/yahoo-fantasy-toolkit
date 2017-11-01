@@ -23,7 +23,7 @@ The option '--h' specifies whether your want to see what the browser is running 
 * [Click](http://click.pocoo.org/)  `pip install click`
 * [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/) `pip install selenium`
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) download chromedriver and put it in PATH
-* [PhantomJS](http://phantomjs.org/)
+* [PhantomJS](http://phantomjs.org/)  download phantomjs.exe and put it in PATH
 * [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4/) `pip install beautifulsoup4`
 
 

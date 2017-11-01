@@ -20,10 +20,10 @@ The option '--h' specifies whether your want to see what the browser is running 
 ## Dependencies
 
 * [Python](https://www.python.org/)
-* [Click](http://click.pocoo.org/)
-* [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/)
-* [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
+* [Click](http://click.pocoo.org/)  `pip install click`
+* [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/) `pip install selenium`
+* [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) download chromedriver and put it in PATH
 * [PhantomJS](http://phantomjs.org/)
-* [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4/)
+* [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4/) `pip install beautifulsoup4`
 
 

@@ -17,11 +17,18 @@ If multiple leagues, separate them with space.
 
 The option '--h' specifies whether your want to see what the browser is running (useful for debugging) or run in headless mode.
 
+Please Note:
+If the players on bench have matches on that day, this program will output information such as below:
+    - Alternate: Stanley Johnson (Det - SG,SF) [Mil]
+    - Alternate: Andre Drummond (Det - PF,C) [Mil]
+
 ## Dependencies
 
 * [Python](https://www.python.org/)
 * [Click](http://click.pocoo.org/)
+    'pip install click'
 * [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/)
+    'pip install selenium'
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 * [PhantomJS](http://phantomjs.org/)
 * [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4/)

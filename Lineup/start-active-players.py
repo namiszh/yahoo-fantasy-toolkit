@@ -55,16 +55,15 @@ def output_alternates(page):
     try:
         bench = soup.find_all('tr', class_='bench')
         bench_bios = [p.find('div', class_='ysf-player-name') for p in bench]
-        opponents = [p.find_all('td', recursive=False)[3].text for p in bench]
+        opponents = [p.find_all('td', recursive=False)[4].text for p in bench]
 
         for player, opponent in zip(bench_bios, opponents):
-        	n = player.find('a', class_='name')
-        	d = player.find('span')
-        	if n and d:
-	        	if lopponent:
-	        		name = n.text
-	        		pos = d.text
-	        		print('    - Alternate: %s (%s) [%s]' % (name, pos, opponent))
+            n = player.find('a', class_='name')
+            d = player.find('span')
+            if n and d and opponent:
+                name = n.text
+                pos = d.text
+                print('    - Alternate: %s (%s) [%s]' % (name, pos, opponent))
     except:
         pass
 
@@ -75,86 +74,86 @@ def output_alternates(page):
 @click.option('--d', type=int, default=7, prompt='Number of days to set active lineup', help='Number of days to set active lineup')
 @click.option('--h', type=bool, default=True, prompt='Do you want to run in headless mode? [True|False]', help='If True you won\'t see what\'s going on while it\'s running. If false you will see the browser render the steps.')
 def start_active_players(u, p, l, d, h):
-	"""Simple python program that sets your active players for the next number DAYS."""
-	print("Logging in as: " + u)
+    """Simple python program that sets your active players for the next number DAYS."""
+    print("Logging in as: " + u)
 
-	if(h):
-		DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:16.0) Gecko/20121026 Firefox/16.0'
-		driver = webdriver.PhantomJS()
-	else:
-		chrome_options = webdriver.ChromeOptions()
-		driver = webdriver.Chrome()
-		driver.set_window_size(1920, 1080)
-		driver.maximize_window()
+    if(h):
+        DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:16.0) Gecko/20121026 Firefox/16.0'
+        driver = webdriver.PhantomJS()
+    else:
+        chrome_options = webdriver.ChromeOptions()
+        driver = webdriver.Chrome()
+        driver.set_window_size(1920, 1080)
+        driver.maximize_window()
 
-	# login into yahoo
-	driver.get('https://login.yahoo.com/?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&authMechanism=primary&yid=&done=https%3A%2F%2Fbasketball.fantasysports.yahoo.com%2Fnba%2F%3Futmpdku%3D1&eid=100&add=1')
-	delay = 8 # seconds
+    # login into yahoo
+    driver.get('https://login.yahoo.com/?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&authMechanism=primary&yid=&done=https%3A%2F%2Fbasketball.fantasysports.yahoo.com%2Fnba%2F%3Futmpdku%3D1&eid=100&add=1')
+    delay = 8 # seconds
 
-	WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'login-username'))).send_keys(u)
-	driver.find_element_by_id('login-signin').click()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'login-username'))).send_keys(u)
+    driver.find_element_by_id('login-signin').click()
 
-	WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'login-passwd'))).send_keys(p)
-	driver.find_element_by_id('login-signin').click()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'login-passwd'))).send_keys(p)
+    driver.find_element_by_id('login-signin').click()
 
-	# make sure the 'My Teams and Leagues' Table is loaded
-	WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "gamehome-teams")))
+    # make sure the 'My Teams and Leagues' Table is loaded
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "gamehome-teams")))
 
-	# find all leagues and teams
-	leagues = driver.find_elements_by_xpath("//div[@id='gamehome-teams']//h3//a")
-	league_names = [league.text for league in leagues]
-	print("You have", len(leagues), "leagues:", league_names)
-	league_urls = [league.get_attribute("href") for league in leagues]
-	league_ids = [re.search(r'/nba/(\d+)$', url).group(1) for url in league_urls]
+    # find all leagues and teams
+    leagues = driver.find_elements_by_xpath("//div[@id='gamehome-teams']//h3//a")
+    league_names = [league.text for league in leagues]
+    print("You have", len(leagues), "leagues:", league_names)
+    league_urls = [league.get_attribute("href") for league in leagues]
+    league_ids = [re.search(r'/nba/(\d+)$', url).group(1) for url in league_urls]
 
-	process_team_list = dict()
-	if l=='all':
-		for league_name, league_url in zip(league_names, league_urls):
-			process_team_list[league_name] = league_url
-	else:
-		leagues = l.split()
-		for league_name, lid, league_url in zip(league_names, league_ids, league_urls):
-			if lid in leagues:
-				process_team_list[league_name] = league_url
+    process_team_list = dict()
+    if l=='all':
+        for league_name, league_url in zip(league_names, league_urls):
+            process_team_list[league_name] = league_url
+    else:
+        leagues = l.split()
+        for league_name, lid, league_url in zip(league_names, league_ids, league_urls):
+            if lid in leagues:
+                process_team_list[league_name] = league_url
 
-		if not process_team_list :
-			print("Cannot not find leagues with id", leagues)
-			return
+        if not process_team_list :
+            print("Cannot not find leagues with id", leagues)
+            return
 
-	for league_name, league_url in process_team_list.items():
-		print("Starting active players for league '{}'".format(league_name))
-		driver.get(league_url)
-		WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "sitenav")))
+    for league_name, league_url in process_team_list.items():
+        print("Starting active players for league '{}'".format(league_name))
+        driver.get(league_url)
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "sitenav")))
 
-		driver.find_element_by_link_text("My Team").click()
-		WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "full_stat_nav")))
+        driver.find_element_by_link_text("My Team").click()
+        WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "full_stat_nav")))
 
-		# starting players for days.
-		for x in range(0, d):
-			date_text = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[@id='selectlist_nav']//a[@href='#']//span[@class='flyout-title']"))).text
-			print("Starting active players for: " + date_text)
+        # starting players for days.
+        for x in range(0, d):
+            date_text = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[@id='selectlist_nav']//a[@href='#']//span[@class='flyout-title']"))).text
+            print("Starting active players for: " + date_text)
 
-			current_url = driver.current_url
-			driver.find_element_by_link_text("Start Active Players").click()
-			WebDriverWait(driver, delay).until(url_changes(current_url))
-			
-			# if there are bench player that has match, output info
-			output_alternates(driver.page_source)
+            current_url = driver.current_url
+            driver.find_element_by_link_text("Start Active Players").click()
+            WebDriverWait(driver, delay).until(url_changes(current_url))
+            
+            # if there are bench player that has match, output info
+            output_alternates(driver.page_source)
 
-			# click 'next day'
-			WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[@id='selectlist_nav']//a[contains(@class, 'Js-next')]"))).click()
+            # click 'next day'
+            WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[@id='selectlist_nav']//a[contains(@class, 'Js-next')]"))).click()
 
-			# wait until page refreshes, that is the date has changed.
-			WebDriverWait(driver, delay).until(
-			    element_text_changed(
-			        (By.XPATH, "//span[@id='selectlist_nav']//a[@href='#']//span[@class='flyout-title']"), date_text ) )
+            # wait until page refreshes, that is the date has changed.
+            WebDriverWait(driver, delay).until(
+                element_text_changed(
+                    (By.XPATH, "//span[@id='selectlist_nav']//a[@href='#']//span[@class='flyout-title']"), date_text ) )
 
 
-	driver.quit()
+    driver.quit()
 
-	print("Starting active players Finished.")
+    print("Starting active players Finished.")
 
 
 
 if __name__ == '__main__':
-	start_active_players()
+    start_active_players()

@@ -19,8 +19,13 @@ The option '--h' specifies whether your want to see what the browser is running 
 
 Please Note:
 If the players on bench have matches on that day, this program will output information such as below:
+```
+Starting active players for: Wed, Nov 1
+Starting active players for: Thu, Nov 2
+Starting active players for: Fri, Nov 3
     - Alternate: Stanley Johnson (Det - SG,SF) [Mil]
     - Alternate: Andre Drummond (Det - PF,C) [Mil]
+```
 
 ## Dependencies
 

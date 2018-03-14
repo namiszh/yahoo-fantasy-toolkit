@@ -27,24 +27,22 @@
                 </ul>
             </div>
             <div id="header-user">
-                {% if g.user.is_authenticated %}
+                {% if current_user.is_authenticated %}
                 <div class="dropdown">
                     <a class="btn btn-sm dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-label="View profile and more" aria-haspopup="true" aria-expanded="false">
-                        <img alt="@namiszh" class="avatar" src="../static/image/user-avatar.png" height="30" width="30">
+                        <img alt="@namiszh" class="avatar" src="{{ current_user.image_url }}" height="30" width="30">
                         <span class="caret"></span></button>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
-                        <li class="dropdown-header"> Signed in as <strong>husthsz</strong></li>
+                        <li class="dropdown-header"> Signed in as <strong>{{ current_user.name }}</strong></li>
                         <li class="divider"></li>
-                        <li><a href="#">Reload Data (1 week)</a></li>
-                        <li><a href="#">Reload Data (2 weeks)</a></li>
-                        <li><a href="#">Reload Data (season)</a></li>
-                        <li class="divider"></li>
+                        <li><a href="#">Import Data</a></li>
+                                  <li class="divider"></li>
                         <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
                     </ul>
                 </div>
                 {% else %}
-                <a>Sign In</a> 
+                <a href="{{ url_for('oauth_authorize') }}">Sign In</a>
                 {% endif %}
             </div>
         </div>
@@ -88,7 +86,7 @@
     </div>
     <div id="footer" class="container">
         <div id="footer-content">
-            <a href="https://github.com/namiszh/fba/tree/master/PowerRanking" target="_blank">GitHub</a>
+            <a href="https://github.com/namiszh/fba" target="_blank">GitHub</a>
         </div>
         <div id="footer-bottom">
             

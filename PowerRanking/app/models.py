@@ -1,57 +1,38 @@
-import csv
+# -*- coding: utf-8 -*-
+"""
+    Yahoo Fantasy Basketball Power Rankings models
+
+    :copyright: (c) 2018 by Marvin Huang
+"""
+from flask_login import UserMixin
 from app import db
 
-
-class Team(db.Model):
-    '''
-    Represents a team.
-    '''
-    id = db.Column(db.Integer, primary_key=True) 
-    idx = db.Column(db.Integer)     # the team index in the league
-    name = db.Column(db.String(120))
-    league_id = db.Column(db.Integer, db.ForeignKey('league.id'))
-    league = db.relationship('League', backref=db.backref('teams', lazy='dynamic'))
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User', backref=db.backref('teams', lazy='dynamic'))
-
-    def __init__(self, team_idx, team_name, league, user=None):
-        self.idx = team_idx
-        self.name = team_name
-        self.league = league
-        self.user = user
-
-    def __repr__(self):
-        username = 'Unkown'
-        if self.user:
-            username = self.user.name
-        return '<Team id={}, idx={}, name={}, league name={}, belongs to {}>'.format(self.id, self.idx, self.name, self.league.name, username)
-
-class League(db.Model):
-    '''
-    Represents a league.
-    '''
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-    def __repr__(self):
-        return '<League id={}, name={}>'.format(self.id, self.name)
+# User and Team are many-to-many relationship,
+# A user can have many teams, and a team can have
+# many managers(co-manager). So we need to define
+# a helper table that is used for the relationship. 
+# For this helper table it is strongly recommended
+# to not use a model but an actual table
+user_identifier = db.Table('user_identifier',
+    db.Column('user_guid', db.String(64), db.ForeignKey('user.guid'), primary_key=True),
+    db.Column('team_key',  db.String(30), db.ForeignKey('team.team_key'), primary_key=True)
+)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     '''
     Represents a user playing yahoo fantasy basketball.
     '''
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
+    guid = db.Column(db.String(64), primary_key=True)
+    name = db.Column(db.String(80))
+    image_url = db.Column(db.String(80))
+
+    # teams = db.relationship('Team', backref='team', lazy='dynamic')
+    # leagues = db.relationship('League', backref='league', lazy='dynamic')
 
     @property
     def is_authenticated(self):
-        return False
+        return True
 
     @property
     def is_active(self):
@@ -61,55 +42,134 @@ class User(db.Model):
     def is_anonymous(self):
         return False
 
+    # override method
     def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
+        return self.guid
 
-    def __init__(self, name):
+    def __init__(self, guid, name, image_url):
+        self.guid = guid
         self.name = name
+        self.image_url = image_url
 
     def __repr__(self):
-        return '<User id={}, user name={}>'.format(self.id, self.name)
-        
+        return '<User guid={}, user name={}>'.format(self.guid, self.name)
 
-class Record(db.Model):
+
+class Team(db.Model):
     '''
-    Represents the data of a team for a week(week > 0) or the entire season (week=0).
+    Represents a team.
+
+     fields:
+
+           'team_key': '375.l.15031.t.5',
+           'team_id': '5',
+           'name': '八菜鸟',
+           'team_logo': 'https://ct.yimg.com/cy/4619/37855982573_bd3af4_192sq.jpg?ct=fantasy',
+           'managers': maybe multiple - use user's guid
     '''
-    week = db.Column(db.Integer, primary_key=True)
-    fg = db.Column(db.Float)
-    ft = db.Column(db.Float)
-    pts = db.Column(db.Integer)
-    _3pm = db.Column(db.Integer)
-    oreb = db.Column(db.Integer)
-    reb = db.Column(db.Integer)
-    ast = db.Column(db.Integer)
-    stl = db.Column(db.Integer)
-    blk = db.Column(db.Integer)
-    to = db.Column(db.Integer)
-    at = db.Column(db.Float)
+    team_key = db.Column(db.String(30), primary_key=True)
+    team_id = db.Column(db.Integer) 
+    name = db.Column(db.String(120))
+    team_logo = db.Column(db.String(120))
 
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), primary_key=True)
-    team = db.relationship('Team', backref=db.backref('records', lazy='dynamic'))
+    # many-to-many relation ship with user
+    managers = db.relationship("User", secondary=user_identifier)
 
-    def __init__(self, week, fg, ft, pts, _3pm, oreb, reb, ast, stl, blk, to, at, team):
-        self.week = week
-        self.fg = fg
-        self.ft = ft
-        self.pts = pts
-        self._3pm = _3pm
-        self.oreb = oreb
-        self.reb  = reb 
-        self.ast  = ast 
-        self.stl  = stl 
-        self.blk  = blk 
-        self.to = to
-        self.at = at
-        self.team = team
+    def get_team_key(self):
+        return self.team_key
+
+    def __init__(self, team_key, team_id, name, team_logo):
+        self.team_key = team_key
+        self.team_id = team_id
+        self.name = name
+        self.team_logo = team_logo
 
     def __repr__(self):
-        return '<Week={}, league={}, team={}, fg={}, ft={}, pts={}, 3pm={}, oreb={}, reb={}, ast={}, stl={}, blk={}, to={}, at={}>'.format(self.week,
-            self.team.league.name, self.team.name, self.fg, self.ft, self.pts, self._3pm, self.oreb, self.reb, self.ast, self.stl, self.blk, self.to, self.at)
+        return '<Team key={}, Team id={}, name={}>'.format(
+            self.team_key, self.team_id, self.name)
+
+
+class League(db.Model):
+    '''
+    Represents a league.
+
+     fields:
+
+           'league_key': '375.l.573',
+           'league_id': '573',
+           'name': 'Never Ending',
+           'num_teams': 20,
+           'scoring_type': 'head',
+           'start_week': '1',
+           'end_week': '23',
+           'current_week': 20,
+    '''
+    league_key = db.Column(db.String(20), primary_key=True)
+    league_id = db.Column(db.Integer)
+    name = db.Column(db.String(120))
+    num_teams = db.Column(db.Integer)
+    scoring_type = db.Column(db.String(30)) 
+    start_week = db.Column(db.Integer)
+    end_week = db.Column(db.Integer)
+    current_week = db.Column(db.Integer)
+
+    # league and team are one-to-many relationship.
+    # 
+    # This is not an actual database field, but a high-level view of the relationship
+    # between leagues and teams, and for that reason it isn't in the database diagram.
+    # For a one-to-many relationship, a db.relationship field is normally defined
+    # on the "one" side, and is used as a convenient way to get access to the "many". 
+    # teams = db.relationship('Team', backref='league', lazy='dynamic')
+
+    # different league can have different stat categories
+    # categories = db.relationship('StatCategory', backref='league', lazy='dynamic')
+
+    def get_league_key(self):
+        return self.league_key
+
+    def __init__(self, league_key, league_id, name, num_teams, scoring_type, 
+        start_week, end_week, current_week):
+        self.league_key = league_key
+        self.league_id = league_id
+        self.name = name
+        self.num_teams = num_teams
+        self.scoring_type = scoring_type
+        self.start_week = start_week
+        self.end_week = end_week
+        self.current_week = current_week
+
+    def __repr__(self):
+        return '<League key={}, id={}, name={}, num_teams={}, scoring_type={}, start_week={}, end_week={}, current_week={}>'.format(
+                 self.league_key, self.league_id, self.name, self.num_teams, 
+                 self.scoring_type, self.start_week, self.end_week, self.current_week)
+
+
+class Category(db.Model):
+    '''
+        Represents available stat categories of nba game.
+        This table should only be updated once
+
+        fields:
+
+              'stat_id': '5',
+              'display_name': 'FG%',
+              'name': 'Field Goal Percentage',
+              'sort_order': '1'
+    '''
+    stat_id = db.Column(db.Integer, primary_key=True)
+    display_name = db.Column(db.String(10))
+    name = db.Column(db.String(40))
+    sort_order = db.Column(db.Integer)  # 0: ascending; 1: decending   ('Turn Over' should be ascending, the less, the better)
+    display_only = db.Column(db.Integer)    # FGM/FGA and FTM/FTA are display only, don't need to calculate score
+
+    def __init__(self, stat_id, display_name, name, sort_order, display_only=0):
+        self.stat_id = stat_id
+        self.display_name = display_name
+        self.name = name
+        self.sort_order = sort_order
+        self.display_only = display_only
+
+    def __repr__(self):
+        return '<stat id={}, display name={}, name={}, sort order={}>'.format(
+            self.stat_id, self.display_name, self.name, self.sort_order)
 

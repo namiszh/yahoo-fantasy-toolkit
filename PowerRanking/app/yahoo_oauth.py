@@ -1,13 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+    Yahoo OAuth
 
+    :copyright: (c) 2018 by Marvin Huang
+"""
 
 from flask import url_for, request, redirect
 from rauth import OAuth2Service
 import json
+import os
 import time
 
 
 class YahooOAuth(object):
-
+    '''
+        This class hands yahoo oauth things
+    '''
     def __init__(self, credentials_file, base_url="http://fantasysports.yahooapis.com/fantasy/v2/"):
 
         # load credentials
@@ -56,14 +64,11 @@ class YahooOAuth(object):
 
         self._update_token(request.args['code'])
 
-        # get session
-        self.session = self.service.get_session(self.access_token)
-
-        # get user info from the session
-        return ('id', 'username', 'email' )
+        # update basic info
+        # return current user 
 
 
-    def request(self, request_str, params={}):
+    def request(self, request_str, params={'format': 'json'}):
         ''' Response to a user request '''
 
         # refresh access token 60 seconds before it expires
@@ -107,9 +112,10 @@ class YahooOAuth(object):
         self.refresh_token = parsed_token["refresh_token"]
         self.expiration_time = time.time() + parsed_token["expires_in"]
 
+        # get session
+        self.session = self.service.get_session(self.access_token)
 
 
-
-
-
-
+# Initialize a YahooOAuth object
+credentials_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'credentials.txt'))
+yahoo_oauth = YahooOAuth(credentials_file)

@@ -30,7 +30,7 @@
                 {% if current_user.is_authenticated %}
                 <div class="dropdown">
                     <a class="btn btn-sm dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-label="View profile and more" aria-haspopup="true" aria-expanded="false">
-                        <img alt="@namiszh" class="avatar" src="{{ current_user.image_url }}" height="30" width="30">
+                        <img alt="@{{ current_user.guid }}" class="avatar" src="{{ current_user.image_url }}" height="30" width="30">
                         <span class="caret"></span></button>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
@@ -42,7 +42,7 @@
                     </ul>
                 </div>
                 {% else %}
-                <a href="{{ url_for('oauth_authorize') }}">Sign In</a>
+                <a href="{{ url_for('oauth_authorize') }}" height="40"><strong>Sign In</strong></a>
                 {% endif %}
             </div>
         </div>
@@ -50,8 +50,14 @@
     <div class="container">
         <div id="top-nav">
             <ul>
-                {% for user_team in user_teams %}
-                {% if user_team[2]==status.current_league %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.league', league_id=user_team[2]) }}">{{user_team[0]}}<br>{{user_team[1]}}</a></li>
+                {% for user_team in current_user.teams %}
+                {% if user_team.league.league_id==status.current_league %}
+                <li class="selected">
+                {% else %}
+                <li>
+                {% endif %}
+                    <a href="{{ url_for('.league', league_id=user_team.league.league_id) }}">{{user_team.name}}<br>{{user_team.league.name}}</a>
+                </li>
                 {% endfor %}
             </ul>
             <p id="show-type">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
@@ -63,8 +69,8 @@
             <div id="main-content">
                 <h2 align="center">
                 {% for user_team in user_teams %}
-                    {% if user_team[2]==status.current_league %}
-                        {{user_team[1]}}
+                    {% if user_team.league.league_id==status.current_league %}
+                        {{user_team.league.name}}
                     {% endif %}
                 {% endfor %}
 

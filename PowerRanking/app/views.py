@@ -13,12 +13,11 @@ import os
 # from bokeh.embed import components
 from datetime import datetime
 from app import app, db, lm, oid, status
-from .models import User, Team, League
-from .forms import LoginForm
-from .compute import compute_png_svg as compute
-from .compute import get_week_score_png
-from .yahoo_oauth import yahoo_oauth
-from .db_manager import db_manager
+from app.models import User, Team, League
+from app.compute import compute_png_svg as compute
+from app.compute import get_week_score_png
+from app.yahoo_oauth import yahoo_oauth
+from app.db_manager import db_manager
 
 
 @app.route('/')
@@ -157,7 +156,6 @@ def oauth_callback():
 
     yahoo_oauth.callback()
     # if social_id is None:
-    #     flash('Authentication failed.')
     #     return redirect(url_for('index'))
 
     db_manager.update_basic_info()
@@ -166,6 +164,12 @@ def oauth_callback():
     user = db_manager.get_current_user()
     if user:
         login_user(user, True)
+    else:
+        flash('Authentication failed.')
+        
+
+    # for team in user.teams:
+    #     print('team', team.name)
 
     # user = User.query.filter_by(name=username).first()
     # if user is None:

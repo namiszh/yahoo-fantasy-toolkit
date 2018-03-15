@@ -5,8 +5,8 @@
     :copyright: (c) 2018 by Marvin Huang
 """
 
-from .yahoo_oauth import yahoo_oauth
-from .models import User, Team, League, Category
+from app.yahoo_oauth import yahoo_oauth
+# from app.models import User, Team, League, Category
 
 class YahooAPI(object):
     def __init__(self, yahoo_oauth):
@@ -20,9 +20,46 @@ class YahooAPI(object):
         uri = 'users;use_login=1'
         resp = self._get(uri)
 
-        #  cannot get user nick name and image_url from this uri,
+        #  Cannot get user nick name and image_url from this uri,
+        #  workaround: 
+        #   from user's team's manager we can get user nickname
+        #  and image url. But there could be multiple managers, so
+        #  we still need the user guid to identify the correct manager.
         return resp['fantasy_content']['users']['0']['user'][0]['guid']
 
+
+    def get_current_user_teams(self):
+        '''
+        Return the current user and all owning teams
+        '''
+        current_user = {}
+        current_user['guid'] = self.get_current_user_guid()
+
+        # user owing teams
+        teams = []
+        uri = 'users;use_login=1/games;game_keys=nba/teams'
+        resp = self._get(uri)
+        teams_content = resp['fantasy_content']['users']['0']['user'][1]['games']['0']['game'][1]['teams']
+        team_count = int(teams_content['count'])
+        for idx in range(0, team_count):
+            team_content = teams_content[str(idx)]['team'][0]
+
+            team = {} # team is a dict, only retrieve data we needed
+            team['team_key']  =     team_content[0]['team_key']
+            team['team_id']   = int(team_content[1]['team_id'])
+            team['name']      =     team_content[2]['name']
+            team['team_logo'] =     team_content[5]['team_logos'][0]['team_logo']['url']
+            teams.append(team)
+
+            # search team managers to find current user's nick name and image url
+            managers_content = team_content[19]['managers']
+            for manager_content in managers_content:
+                guid = manager_content['manager']['guid']
+                if guid == current_user['guid']:
+                    current_user['name'] = manager_content['manager']['nickname']
+                    current_user['image_url'] = manager_content['manager']['image_url']
+
+        return current_user,teams
 
     def get_current_user_leagues(self):
         '''
@@ -37,17 +74,15 @@ class YahooAPI(object):
         for idx in range(0,league_count):
             league_content = leagues_content[str(idx)]['league'][0]
 
-            league_key = league_content['league_key']
-            league_id = int(league_content['league_id'])
-            name = league_content['name']
-            num_teams = int(league_content['num_teams'])
-            scoring_type = league_content['scoring_type']
-            start_week = int(league_content['start_week'])
-            end_week = int(league_content['end_week'])
-            current_week = int(league_content['current_week'])
-
-            league = League(league_key, league_id, name, num_teams, scoring_type, start_week, end_week, current_week)
-            print(league)
+            league = {} # league is a dict, only retrieve data we needed
+            league['league_key'] = league_content['league_key']
+            league['league_id'] = int(league_content['league_id'])
+            league['name'] = league_content['name']
+            league['num_teams'] = int(league_content['num_teams'])
+            league['scoring_type'] = league_content['scoring_type']
+            league['start_week'] = int(league_content['start_week'])
+            league['end_week'] = int(league_content['end_week'])
+            league['current_week'] = int(league_content['current_week'])
             leagues.append(league)
 
         return leagues
@@ -63,30 +98,17 @@ class YahooAPI(object):
         team_count = int(teams_content['count'])
 
         teams = []
-        managers = []
         for idx in range(0, team_count):
             team_content = teams_content[str(idx)]['team'][0]
-            # print(team_content)
-            team_key = team_content[0]['team_key']
-            team_id = int(team_content[1]['team_id'])
-            name = team_content[2]['name']
-            team_logo = team_content[5]['team_logos'][0]['team_logo']['url']
 
-            team = Team(team_key, team_id, name, team_logo)
-            print(team)
-
-            managers_content = team_content[19]['managers']
-            for manager_content in managers_content:
-                guid = manager_content['manager']['guid']
-                nickname = manager_content['manager']['nickname']
-                image_url = manager_content['manager']['image_url']
-                manager = User(guid, nickname, image_url)
-                print(manager)
-                managers.append(manager)
-
+            team = {}
+            team['team_key']  =     team_content[0]['team_key']
+            team['team_id']   = int(team_content[1]['team_id'])
+            team['name']      =     team_content[2]['name']
+            team['team_logo'] =     team_content[5]['team_logos'][0]['team_logo']['url']
             teams.append(team)
 
-        return teams, managers
+        return teams
 
 
     def get_league_stat_categories(self, league_key):
@@ -135,18 +157,11 @@ class YahooAPI(object):
         resp = self._get(uri)
 
 
-    def get_user_teams(self, user_guid):
-        '''
-        Return all teams of a user
-        '''
-        uri = 'users;guid={}/games;game_keys=nba/teams'.format(user_guid)
-        resp = self._get(uri)
-
 
     def _get(self, uri):
         base_url = 'https://fantasysports.yahooapis.com/fantasy/v2/'
         uri = base_url + uri
-        print('request', uri)
+        # print('request', uri)
         resp = self.oauth.request(uri, params={'format': 'json'}).json()
         # print('resp', resp)
         return resp

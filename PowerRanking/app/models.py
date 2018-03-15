@@ -13,7 +13,7 @@ from app import db
 # a helper table that is used for the relationship. 
 # For this helper table it is strongly recommended
 # to not use a model but an actual table
-user_identifier = db.Table('user_identifier',
+user_team_association_table = db.Table('user_team', db.Model.metadata,
     db.Column('user_guid', db.String(64), db.ForeignKey('user.guid'), primary_key=True),
     db.Column('team_key',  db.String(30), db.ForeignKey('team.team_key'), primary_key=True)
 )
@@ -27,8 +27,8 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(80))
     image_url = db.Column(db.String(80))
 
-    # teams = db.relationship('Team', backref='team', lazy='dynamic')
-    # leagues = db.relationship('League', backref='league', lazy='dynamic')
+    # many-to-many relation ship with user
+    teams = db.relationship("Team", secondary=user_team_association_table, backref="managers")
 
     @property
     def is_authenticated(self):
@@ -46,13 +46,16 @@ class User(db.Model, UserMixin):
     def get_id(self):
         return self.guid
 
+    def update(other):
+        pass
+
     def __init__(self, guid, name, image_url):
         self.guid = guid
         self.name = name
         self.image_url = image_url
 
     def __repr__(self):
-        return '<User guid={}, user name={}>'.format(self.guid, self.name)
+        return '<User guid={}, name={}>'.format(self.guid, self.name)
 
 
 class Team(db.Model):
@@ -72,8 +75,7 @@ class Team(db.Model):
     name = db.Column(db.String(120))
     team_logo = db.Column(db.String(120))
 
-    # many-to-many relation ship with user
-    managers = db.relationship("User", secondary=user_identifier)
+    league_key = db.Column(db.String, db.ForeignKey('league.league_key'))
 
     def get_team_key(self):
         return self.team_key
@@ -85,7 +87,7 @@ class Team(db.Model):
         self.team_logo = team_logo
 
     def __repr__(self):
-        return '<Team key={}, Team id={}, name={}>'.format(
+        return '<Team key={}, id={}, name={}>'.format(
             self.team_key, self.team_id, self.name)
 
 
@@ -119,10 +121,10 @@ class League(db.Model):
     # between leagues and teams, and for that reason it isn't in the database diagram.
     # For a one-to-many relationship, a db.relationship field is normally defined
     # on the "one" side, and is used as a convenient way to get access to the "many". 
-    # teams = db.relationship('Team', backref='league', lazy='dynamic')
+    teams = db.relationship('Team', backref="league", order_by="Team.team_id")
 
-    # different league can have different stat categories
-    # categories = db.relationship('StatCategory', backref='league', lazy='dynamic')
+    # different league can have different stat categories, no back reference is defined.
+    # categories = db.relationship('Category')
 
     def get_league_key(self):
         return self.league_key

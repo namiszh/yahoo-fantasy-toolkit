@@ -37,7 +37,7 @@
                         <li class="dropdown-header"> Signed in as <strong>{{ current_user.name }}</strong></li>
                         <li class="divider"></li>
                         <li><a href="#">Import Data</a></li>
-                                  <li class="divider"></li>
+                        <li class="divider"></li>
                         <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
                     </ul>
                 </div>
@@ -51,16 +51,16 @@
         <div id="top-nav">
             <ul>
                 {% for user_team in current_user.teams %}
-                {% if user_team.league.league_id==status.current_league %}
+                {% if user_team.league.league_id==session['current_league'] %}
                 <li class="selected">
                 {% else %}
                 <li>
                 {% endif %}
-                    <a href="{{ url_for('.league', league_id=user_team.league.league_id) }}">{{user_team.name}}<br>{{user_team.league.name}}</a>
+                    <a href="{{ url_for('.league', lid=user_team.league.league_id) }}">{{user_team.name}}<br>{{user_team.league.name}}</a>
                 </li>
                 {% endfor %}
             </ul>
-            <p id="show-type">Show by: <a href="{{ url_for('.type', type_id=0) }}">Week</a> | <a href="{{ url_for('.type', type_id=1) }}">Team</a> </p>
+            <p id="show-type">Show by: <a href="{{ url_for('.showtype', show_type='week') }}">Week</a> | <a href="{{ url_for('.showtype', show_type='team') }}">Team</a> </p>
         </div>
         <div id="main">
             <div id="main-sidebar">
@@ -68,18 +68,12 @@
             </div>
             <div id="main-content">
                 <h2 align="center">
-                {% for user_team in user_teams %}
-                    {% if user_team.league.league_id==status.current_league %}
-                        {{user_team.league.name}}
-                    {% endif %}
-                {% endfor %}
-
-                {% if status.type == 0 %}
-                    第{{status.current_week}}周战力榜
+                {% if session['show_type'] == 'week' %}
+                    第{{session['current_team']}}周战力榜
                 {% else %}
-                    {% for league_team in league_teams %}
-                        {% if league_team[1]==status.current_team %}
-                            - {{league_team[0]}}
+                    {% for user_team in user_teams %}
+                        {% if user_team.league.league_id==session['current_league'] %}
+                            {{user_team.league.name}}
                         {% endif %}
                     {% endfor %}
                 {% endif %}

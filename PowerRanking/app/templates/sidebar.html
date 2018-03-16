@@ -1,17 +1,34 @@
-{% if status.type == 0 %}
+{% if session['show_type'] == 'week' %}
     <h1 class="sidebar-title">Weeks</h1>
     <ul id="weeks">
         <br>
-        {% for i in range(status.max_week, 0, -1) %}
-        {% if i==status.current_week %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.week', league_id=status.current_league, week=i) }}">Week {{i}}</a></li>
+        {% for i in range(session['start_week'], session['current_week']) %}
+        <li><a href="{{ url_for('.week', lid=session['current_league'], week=i) }}">Week {{i}}</a></li>
+        {% endfor %}
+
+        <li class="selected"><a href="{{ url_for('.week', lid=session['current_league'], week=session['current_week']) }}">Week {{session['current_week']}}</a></li>
+
+        {% for i in range(session['current_week']+1, session['end_week']+1) %}
+        <li>Week {{i}}</a></li>
         {% endfor %}
     </ul>
 {% else %}
     <h1 class="sidebar-title">Teams</h1>
     <ul id="teams">
         <br>
-        {% for team in league_teams %}
-        {% if team[1]==status.current_team %}<li class="selected">{% else %}<li>{% endif %}<a href="{{ url_for('.team', league_id=status.current_league, team_id=team[1]) }}">{{team[0]}}</a></li> 
+        {% for user_team in current_user.teams %}
+            {% if user_team.league.league_id==session['current_league'] %}
+                {% for league_team in user_team.league.teams %}
+                    {% if league_team.team_id==session['current_team'] %}
+        <li class="selected">
+                    {% else %}
+        <li>
+                    {% endif %}
+            <img src="{{league_team.team_logo}}" height="20">
+            <a href="{{ url_for('.team', lid=session['current_league'], tid=league_team.team_id) }}">{{league_team.name}}</a>
+        </li> 
+                {% endfor %}
+            {% endif %}
         {% endfor %}
     </ul>
 {% endif %}

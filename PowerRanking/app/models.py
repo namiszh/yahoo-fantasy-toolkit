@@ -28,7 +28,8 @@ class User(db.Model, UserMixin):
     image_url = db.Column(db.String(80))
 
     # many-to-many relation ship with user
-    teams = db.relationship("Team", secondary=user_team_association_table, backref="managers")
+    teams = db.relationship("Team", secondary=user_team_association_table, 
+        backref="managers", order_by="Team.team_key")
 
     @property
     def is_authenticated(self):

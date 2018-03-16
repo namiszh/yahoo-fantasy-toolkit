@@ -108,6 +108,8 @@ class DatabaseManager(object):
 
         return self.current_user
 
+    def get_initial():
+        pass
 
 # initialize database manager instance
 db_manager = DatabaseManager(yahoo_api)

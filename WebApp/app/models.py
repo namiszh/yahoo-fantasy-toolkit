@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
 
     # many-to-many relation ship with user
     teams = db.relationship("Team", secondary=user_team_association_table, 
-        backref="managers", order_by="Team.team_key")
+        backref="managers", order_by="Team.league_id")
 
     @property
     def is_authenticated(self):
@@ -76,7 +76,8 @@ class Team(db.Model):
     name = db.Column(db.String(120))
     team_logo = db.Column(db.String(120))
 
-    league_key = db.Column(db.String, db.ForeignKey('league.league_key'))
+    league_id = db.Column(db.Integer, db.ForeignKey('league.league_id'))
+
 
     def get_team_key(self):
         return self.team_key
@@ -108,7 +109,7 @@ class League(db.Model):
            'current_week': 20,
     '''
     league_key = db.Column(db.String(20), primary_key=True)
-    league_id = db.Column(db.Integer)
+    league_id = db.Column(db.Integer, unique=True)
     name = db.Column(db.String(120))
     num_teams = db.Column(db.Integer)
     scoring_type = db.Column(db.String(30)) 

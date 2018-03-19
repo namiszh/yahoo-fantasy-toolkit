@@ -12,10 +12,10 @@ import base64
 
 # web application directory
 WEB_APP_ROOT = os.path.abspath(os.path.dirname( __file__ ))
-print(WEB_APP_ROOT)
+# print(WEB_APP_ROOT)
 
 DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname( WEB_APP_ROOT ), 'data'))
-print(DATA_ROOT)
+# print(DATA_ROOT)
 
 def data_to_ranking_score(values, reverse = False):
     '''

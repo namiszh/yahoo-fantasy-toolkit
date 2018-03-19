@@ -24,8 +24,9 @@
                     {% else %}
         <li>
                     {% endif %}
-            <img src="{{league_team.team_logo}}" height="20">
-            <a href="{{ url_for('.team', lid=session['current_league'], tid=league_team.team_id) }}">{{league_team.name}}</a>
+            <a href="{{ url_for('.team', lid=session['current_league'], tid=league_team.team_id) }}">
+                <img src="{{league_team.team_logo}}" height="20">&nbsp;&nbsp;{{league_team.name}}
+            </a>
         </li> 
                 {% endfor %}
             {% endif %}

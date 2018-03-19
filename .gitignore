@@ -10,5 +10,6 @@ __pycache__/
 *.log
 
 *.db
-DraftAnylasyis/*.csv
-PowerRanking/db_repository/*.*
+Toolkit/*.csv
+WebApp/db_repository
+WebApp/venv

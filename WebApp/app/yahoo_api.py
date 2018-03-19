@@ -85,6 +85,9 @@ class YahooAPI(object):
             league['current_week'] = int(league_content['current_week'])
             leagues.append(league)
 
+        # sort by league id
+        leagues.sort(key = lambda league : int(league['league_id']))
+
         return leagues
 
 
@@ -107,6 +110,9 @@ class YahooAPI(object):
             team['name']      =     team_content[2]['name']
             team['team_logo'] =     team_content[5]['team_logos'][0]['team_logo']['url']
             teams.append(team)
+
+        # sort by team id
+        teams.sort(key = lambda team : int(team['team_id']))
 
         return teams
 

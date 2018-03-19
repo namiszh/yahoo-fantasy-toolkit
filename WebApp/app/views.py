@@ -64,7 +64,7 @@ def team(lid, tid):
     return render_template('index.html', result=figdata_png)
 
 
-@app.route('/<int:lid>/<int:week>')
+@app.route('/<int:lid>/week=<int:week>')
 def week(lid, week):
     '''
     Show power ranking bar graph of the week.

@@ -22,9 +22,9 @@ class DatabaseManager(object):
           o. teams of each league
           o. stat categories of each user
         '''
-        db.session.remove()
-        db.drop_all()
-        db.create_all()
+        # db.session.remove()
+        # db.drop_all()
+        # db.create_all()
 
         current_user, user_teams = self.yahoo.get_current_user_teams()
 

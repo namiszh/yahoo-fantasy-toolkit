@@ -5,13 +5,12 @@
     :copyright: (c) 2018 by Marvin Huang
 """
 
-from app.yahoo_oauth import yahoo_oauth
+from app import yahoo_oauth
 # from app.models import User, Team, League, Category
 
 class YahooAPI(object):
     def __init__(self, yahoo_oauth):
         self.oauth = yahoo_oauth
-
 
     def get_current_user_guid(self):
         '''
@@ -155,14 +154,26 @@ class YahooAPI(object):
         resp = self._get(uri)
 
 
-    def get_team_stat(self, team_key, week):
+    def get_team_stat(self, team, week=0):
         '''
-        Return the stats of a team for a certain week
+        Return the stats of a team for a certain week, or the season(week==0)
         '''
-        uri = 'team/{}/stats;type=week;week={}'.format(team_key, week)
+        if week==0:
+            uri = 'team/{}/stats;type=season'.format(team.team_key)
+        else:
+            uri = 'team/{}/stats;type=week;week={}'.format(team.team_key, week)
         resp = self._get(uri)
+        team_stats = resp['fantasy_content']['team'][1]['team_stats']['stats']
 
+        stats = []
+        for team_stat in team_stats:
+            stat = {}
+            stat['stat_id'] = team_stat['stat']['stat_id']
+            stat['value'] = team_stat['stat']['value']
+            stats.append(stat)
 
+        # print(stats)
+        return stats
 
     def _get(self, uri):
         base_url = 'https://fantasysports.yahooapis.com/fantasy/v2/'
@@ -172,5 +183,4 @@ class YahooAPI(object):
         # print('resp', resp)
         return resp
 
-# initialize yahoo api object
-yahoo_api = YahooAPI(yahoo_oauth)
+

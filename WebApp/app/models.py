@@ -79,9 +79,6 @@ class Team(db.Model):
     league_id = db.Column(db.Integer, db.ForeignKey('league.league_id'))
 
 
-    def get_team_key(self):
-        return self.team_key
-
     def __init__(self, team_key, team_id, name, team_logo):
         self.team_key = team_key
         self.team_id = team_id
@@ -128,8 +125,6 @@ class League(db.Model):
     # different league can have different stat categories, no back reference is defined.
     # categories = db.relationship('Category')
 
-    def get_league_key(self):
-        return self.league_key
 
     def __init__(self, league_key, league_id, name, num_teams, scoring_type, 
         start_week, end_week, current_week):
@@ -177,3 +172,22 @@ class Category(db.Model):
         return '<stat id={}, display name={}, name={}, sort order={}>'.format(
             self.stat_id, self.display_name, self.name, self.sort_order)
 
+
+
+class Stat(db.Model):
+    """The stat of each team"""
+
+    team_key = db.Column(db.String(30), db.ForeignKey('team.team_key'), primary_key=True)
+    week = db.Column(db.Integer, primary_key=True)
+    stat_id = db.Column(db.Integer, db.ForeignKey('category.stat_id'), primary_key=True)
+    value = db.Column(db.String(30))
+
+    def __init__(self, team_key, week, stat_id, value):
+        self.team_key = team_key
+        self.week = week
+        self.stat_id = stat_id
+        self.value = value
+
+    def __repr__(self):
+        return '<team={}, week={}, stat id={}, value={}>'.format(
+            self.team_key, self.week, self.stat_id, self.value)

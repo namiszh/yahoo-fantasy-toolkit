@@ -36,13 +36,13 @@
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li class="dropdown-header"> Signed in as <strong>{{ current_user.name }}</strong></li>
                         <li class="divider"></li>
-                        <li><a href="#">Import Data</a></li>
+                        <li><a href="{{ url_for('import_stats') }}">Import Stats</a></li>
                         <li class="divider"></li>
                         <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
                     </ul>
                 </div>
                 {% else %}
-                <a href="{{ url_for('oauth_authorize') }}" height="40"><strong>Sign In</strong></a>
+                <a href="{{ url_for('login') }}" height="40"><strong>Sign In</strong></a>
                 {% endif %}
             </div>
         </div>
@@ -69,7 +69,11 @@
             <div id="main-content">
                 <h2 align="center">
                 {% if session['show_type'] == 'week' %}
-                    第{{session['current_team']}}周战力榜
+                    {% if session['current_week'] == 0 %}
+                        总战力榜
+                    {% else %}
+                        第{{session['current_week']}}周战力榜
+                    {% endif %}
                 {% else %}
                     {% for user_team in user_teams %}
                         {% if user_team.league.league_id==session['current_league'] %}

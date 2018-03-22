@@ -16,15 +16,25 @@ from app import app, lm
 from app.models import User
 from app.compute import compute_png_svg as compute
 from app.compute import get_week_score_png
-from app.yahoo_oauth import yahoo_oauth
-from app.db_manager import db_manager
+
+from app.yahoo_oauth import YahooOAuth
+from app.yahoo_api import YahooAPI
+from app.db_manager import DataManager
+
+# Initialize a YahooOAuth object
+yahoo_oauth = YahooOAuth(app.config['CREDENTIALS_FILE'])
+
+# initialize yahoo api object
+yahoo_api = YahooAPI(yahoo_oauth)
+
+# initialize database manager instance
+dm = DataManager(yahoo_api)
 
 
 @app.route('/')
 @app.route('/index')
 # @login_required
 def index():
-
     return render_template('index.html')
 
 
@@ -77,9 +87,9 @@ def week(lid, week):
     session['current_league'] = lid
     session['current_week'] = week
 
-    figdata_png = get_week_score_png(lid, week)
+    # figdata_png = get_week_score_png(lid, week)
 
-    return render_template('index.html', result=figdata_png)
+    return render_template('index.html')
 
 
 @app.route('/logout')
@@ -93,47 +103,83 @@ def load_user(id):
     return User.query.get(id)
 
 
-##########################################################################
-@app.route('/authorize')
-def oauth_authorize():
+
+@app.route('/login')
+def login():
     '''
-      This method is called when user clicks 'login in'
-    '''
-
-    if not current_user.is_anonymous:
-        return redirect(url_for('index'))
-
-    return yahoo_oauth.authorize()
-
-
-@app.route('/callback')
-def oauth_callback():
-    '''
-      This method is called after the authorize completes.
+      This method is called when user clicks 'Sign in'
     '''
     if not current_user.is_anonymous:
         return redirect(url_for('index'))
-
-    yahoo_oauth.callback()
-    # if social_id is None:
-    #     return redirect(url_for('index'))
-
-    db_manager.update_basic_info()
-
-    # get_current_user
-    user = db_manager.get_current_user()
-    if user:
-        login_user(user, True)
+    elif not yahoo_oauth.is_authorized():
+        return redirect(url_for('oauth_authorize', oauth_source='login'))
     else:
-        flash('Authentication failed.')
+        # get_current_user
+        user = dm.get_current_user()
+        if user:
+            login_user(user, True)
+        else:
+            flash('Authentication failed.')
 
-    session['current_league'] = 15031
-    session['show_type'] = 'week'
-    session['current_team'] = 16
-    session['start_week'] = 1
-    session['end_week'] = 23
-    session['current_week'] = 21
+        session['show_type'] = 'week'
+        session['current_league'] = 15031
+        session['current_team'] = 16
+        session['start_week'] = 1
+        session['end_week'] = 23
+        session['current_week'] = 21
+
+        return redirect(url_for('index'))
+
+
+@app.route('/import')
+def import_stats():
+    '''
+      This method is called when user clicks 'Import Stats'
+    '''
+    if not yahoo_oauth.is_authorized():
+        return redirect(url_for('oauth_authorize', oauth_source='import'))
+    else:
+        dm.import_stats()
 
     return redirect(url_for('index'))
 
-##########################################################################
+@app.route('/authorize?<oauth_source>')
+def oauth_authorize(oauth_source):
+    '''
+      This method can be called when user clicks 'login in' or 'import data'
+      the parameter 'source' indicates where it is from
+    '''
+    return yahoo_oauth.authorize(oauth_source)
+
+@app.route('/callback?<oauth_source>')
+def oauth_callback(oauth_source):
+    '''
+      This method is called after the authorize completes.
+    '''
+    yahoo_oauth.callback()
+
+    if oauth_source == 'login':
+
+        dm.update_basic_info()
+
+        # get_current_user
+        user = dm.get_current_user()
+        if user:
+            login_user(user, True)
+        else:
+            flash('Authentication failed.')
+
+        session['show_type'] = 'week'
+        session['current_league'] = 15031
+        session['current_team'] = 16
+        session['start_week'] = 1
+        session['end_week'] = 23
+        session['current_week'] = 21
+
+        # session['team']   = user.teams[0]
+        # session['league'] = user.teams[0].league
+        # session['week']   = user.teams[0].league.current_week
+    elif oauth_source == 'import':
+        dm.import_stats()
+
+    return redirect(url_for('index'))

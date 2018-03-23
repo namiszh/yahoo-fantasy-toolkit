@@ -3,12 +3,12 @@
 This project contains a WebApp and toolkit to help playing with yahoo fantasy basketball.
 
 ## WebApp
-Analysis and Visualation of your yahoo fantasy basketball teams and leagues for the current season. 
+Flask web application to analysis and visualize the performance of your yahoo fantasy basketball teams for the current season. 
 This would need to authorize to sign in to yahoo, and then import stats via yahoo api.
 
 
 ## Toolkit
-Several standalone python scripts.
+Several standalone python scripts using selenium to do automatic work.
 
 * Draft Tools
 

@@ -129,17 +129,16 @@ class YahooAPI(object):
         for stat_category in stat_categories:
             stat_content = stat_category['stat']
 
-            stat_id = int(stat_content['stat_id'])
-            display_name = stat_content['display_name']
-            name = stat_content['name']
-            sort_order = int(stat_content['sort_order'])
+            category = {}
+            category['stat_id'] = int(stat_content['stat_id'])
+            category['display_name'] = stat_content['display_name']
+            category['name'] = stat_content['name']
+            category['sort_order'] = int(stat_content['sort_order'])
             if 'is_only_display_stat' in stat_content:
-                display_only = int(stat_content['is_only_display_stat'])
+                category['display_only'] = int(stat_content['is_only_display_stat'])
             else:
-                display_only = 0
+                category['display_only'] = 0
             
-            category = Category(stat_id, display_name, name, sort_order, display_only)
-            print(category)
             categories.append(category)
 
         return categories
@@ -152,7 +151,23 @@ class YahooAPI(object):
         '''
         uri = 'game/nba/stat_categories'
         resp = self._get(uri)
+        stat_categories = [ x['stat'] for x in resp['fantasy_content']['game'][1]['stat_categories']['stats'] ]
+        categories = []
+        for stat_category in stat_categories:
 
+            category = {}
+            category['stat_id'] = int(stat_category['stat_id'])
+            category['display_name'] = stat_category['display_name']
+            category['name'] = stat_category['name']
+            category['sort_order'] = int(stat_category['sort_order'])
+            if 'is_only_display_stat' in stat_category:
+                category['display_only'] = int(stat_category['is_only_display_stat'])
+            else:
+                category['display_only'] = 0
+            
+            categories.append(category)
+
+        return categories
 
     def get_team_stat(self, team, week=0):
         '''

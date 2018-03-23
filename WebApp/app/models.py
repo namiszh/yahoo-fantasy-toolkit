@@ -169,8 +169,8 @@ class Category(db.Model):
         self.display_only = display_only
 
     def __repr__(self):
-        return '<stat id={}, display name={}, name={}, sort order={}>'.format(
-            self.stat_id, self.display_name, self.name, self.sort_order)
+        return '<stat id={}, display name={}, name={}, sort order={}. display only = {}>'.format(
+            self.stat_id, self.display_name, self.name, self.sort_order, self.display_only)
 
 
 
@@ -180,7 +180,20 @@ class Stat(db.Model):
     team_key = db.Column(db.String(30), db.ForeignKey('team.team_key'), primary_key=True)
     week = db.Column(db.Integer, primary_key=True)
     stat_id = db.Column(db.Integer, db.ForeignKey('category.stat_id'), primary_key=True)
+
+    # value is the raw stat import from yahoo
     value = db.Column(db.String(30))
+
+    # score is calculated based all your teams' stat value.
+    # just like the rank, but in the opposite order.
+    # For example, if there are 20 teams in your league,
+    # and this stat you rank the first, then your score
+    # is 20.
+    # Use 'Float' type instead of 'Integer', because multiple
+    # teams can share the same rank.
+    # If team A and Team B both ranks the 19, then each of them
+    # get score 19.5.
+    score = db.Column(db.Float)
 
     def __init__(self, team_key, week, stat_id, value):
         self.team_key = team_key
@@ -189,5 +202,6 @@ class Stat(db.Model):
         self.value = value
 
     def __repr__(self):
-        return '<team={}, week={}, stat id={}, value={}>'.format(
-            self.team_key, self.week, self.stat_id, self.value)
+        return '<team={}, week={}, stat id={}, value={}, score={}>'.format(
+            self.team_key, self.week, self.stat_id, self.value, self.score)
+

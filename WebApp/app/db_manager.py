@@ -4,9 +4,31 @@
 
     :copyright: (c) 2018 by Marvin Huang
 """
-
+from scipy.stats import rankdata
 from app import db, yahoo_api
 from app.models import User, Team, League, Category, Stat
+
+def num(s):
+    try:
+        return int(s)
+    except ValueError:
+        return float(s)
+
+def data_to_ranking_score(values, reverse = False):
+    '''
+    Given a list of value, return a list of ranking score.
+    If reverse = False, the biggest value will get the biggest ranking score.
+    If reverse = True, the biggest value will get the smallest ranking score.
+    Only category 'TO' should set 'reverse' to 'True'.
+
+    The smallest ranking score is 1, the biggest ranking score is the element
+    number of this list.
+    '''
+    scores = rankdata(values)
+    if reverse:
+        scores = [(len(values) + 1 - score) for score in scores]
+
+    return scores;
 
 class DataManager(object):
     def __init__(self, yahoo_api):
@@ -24,6 +46,10 @@ class DataManager(object):
         # db.session.remove()
         # db.drop_all()
         # db.create_all()
+
+        # category table only need to build once
+        if not Category.query.first():
+            self.import_game_stat_categories()
 
         current_user, user_teams = self.yahoo.get_current_user_teams()
 
@@ -121,18 +147,24 @@ class DataManager(object):
         # when we imported stat last time, week 6 may not had
         # completed thus the stats may change later.
         # 
-        for team in league.teams:
-            last_imported_week = self._get_last_imported_week(team)
+        if league.teams:
+            last_imported_week = self._get_last_imported_week(league.teams[0])
 
+            # for single weeks
             for week in range(last_imported_week,league.current_week + 1):
-                self.import_team_stats_by_week(team, week)
+                for team in league.teams:
+                    self.import_team_stats_by_week(team, week)
 
-            # always need to update season stats
-            self.import_team_stats_by_week(team, 0)
+                self.compute_league_score(league, week)
 
+            # for whole season
+            for team in league.teams:
+                self.import_team_stats_by_week(team, 0)
+
+            self.compute_league_score(league, 0)
 
     def import_team_stats_by_week(self, team, week):
-        print('import stat for team {} week = {}'.format(team.team_key, week))
+        # print('import stat for team {} week = {}'.format(team.team_key, week))
         team_stats = self.yahoo.get_team_stat(team, week)
         for team_stat in team_stats:
             stat_id = int(team_stat['stat_id'])
@@ -155,6 +187,46 @@ class DataManager(object):
 
         return self.current_user
 
+    def compute_league_score(self, league, week):
+        '''compute the score for each stat each team of a week in a league'''
+        stat_ids = [ int(x[0]) for x in db.session.query(Stat.stat_id.distinct()).filter(
+            Stat.team_key.startswith(league.league_key), Stat.week==week).order_by(Stat.stat_id).all()]
+        # print('league stat ids', stat_ids)
+
+        for stat_id in stat_ids:
+            # check whether need to compute
+            stat = Category.query.get(stat_id)
+            if not stat or stat.display_only == 1:
+                continue
+
+            team_values = db.session.query(Stat.team_key, Stat.value).filter(
+            Stat.team_key.startswith(league.league_key+'.'), Stat.week==week, Stat.stat_id==stat_id).all()
+            teams = [x[0] for x in team_values]
+            values = [num(x[1]) for x in team_values]
+            scores = data_to_ranking_score(values, stat.sort_order==0)
+
+    def import_game_stat_categories(self):
+        categories = self.yahoo.get_game_stat_categories()
+        for category in categories:
+            # print(category)
+            stat_id = int(category['stat_id'])
+            display_name = category['display_name']
+            name = category['name']
+            sort_order = category['sort_order']
+            display_only = category['display_only']
+
+            stat = Category.query.get(stat_id)
+            if stat:
+                stat.display_name = display_name
+                stat.name = name
+                stat.sort_order = sort_order
+                stat.display_only = display_only
+            else:
+                stat = Category(stat_id, display_name, name, sort_order, display_only)
+                db.session.add(stat)
+            # print(stat)
+        db.session.commit()
+
     def get_initial():
         pass
 
@@ -166,5 +238,6 @@ class DataManager(object):
         else:
             # print('============ no stat has been imported for team {} yet ============'.format(team.name) )
             return team.league.start_week
+
 
 

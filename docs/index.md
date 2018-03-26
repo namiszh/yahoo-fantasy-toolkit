@@ -18,7 +18,7 @@ That's brilliant! ! ! Yahoo API is absolutely much better, because it's more sta
 To use Yahoo API, you first need to create a [Yahoo APP](https://developer.yahoo.com/apps/).
 
 
-![alt text](https://github.com/namiszh/fba/blob/master/docs/images/create_yahoo_app.PNG "Create Yahoo APP")
+![alt text](images/create_yahoo_app.PNG "Create Yahoo APP")
 
 
 If you select 'Web Application' in Application Type, a Callback Domain is required. However, localhost or 127.0.0.1 is not allowed.
@@ -26,7 +26,7 @@ But we do need to develop our app locally. The solution is to use **ngrok**.
 
 Now ngrok only provides __random__ domain for Free Plan. What I do here is to start ngrok first, then a random domain is generated.
 
-![alt text](https://github.com/namiszh/fba/blob/master/docs/images/ngrok.png "ngrok domain")
+![alt text](images/ngrok.png "ngrok domain")
 
 Then I will use this domain to create yahoo APP. The ngrok session is always kept running during my development process.
 

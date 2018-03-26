@@ -62,17 +62,7 @@ def get_week_csv_file(league_name, week, file_type='score'):
 
     return file_path
 
-def get_week_score_png(league_id, week):
-
-    week_score_file = get_week_csv_file("Never Ending", 1, "score")
-    week_df = pd.read_csv(week_score_file, encoding = "ISO-8859-1")
-
-    season_score_file = get_week_csv_file("Never Ending", 0, "score")
-    season_df = pd.read_csv(season_score_file, encoding = "ISO-8859-1")
-
-    names = week_df['Team Name'].tolist()
-    week_scores = week_df['Total'].tolist()
-    season_scores = season_df['Total'].tolist()
+def get_week_score_png(names, scores, title):
 
     pos = list(range(1, len(names)+1))
     print(pos)
@@ -86,7 +76,7 @@ def get_week_score_png(league_id, week):
     # in position pos,
     plt.bar([p + width for p in pos],
             
-            week_scores,
+            scores,
             # of width
             width,
             # with alpha 0.5
@@ -97,26 +87,12 @@ def get_week_score_png(league_id, week):
             # with label the first value in first_name
             label='Week')
 
-    # Create a bar with mid_score data,
-    # in position pos + some width buffer,
-    plt.bar([p + 2*width for p in pos],
-            #using df['mid_score'] data,
-            season_scores,
-            # of width
-            width,
-            # with alpha 0.5
-            alpha=0.2,
-            # with color
-            color='#F78F1E',
-            edgecolor='#000000',
-            # with label the second value in first_name
-            label='Season')
 
     # Set the y axis label
     ax.set_ylabel('Score')
 
     # Set the chart's title
-    ax.set_title('Week {} Power Ranking'.format(week))
+    ax.set_title(title)
 
     # Set the position of the x ticks
     ax.set_xticks([p + 1.5 * width for p in pos])
@@ -129,7 +105,7 @@ def get_week_score_png(league_id, week):
     plt.ylim(0, 180 )
 
     # Adding the legend and showing the plot
-    plt.legend(['Week', 'Season'], loc='upper right')
+    # plt.legend(['Week', 'Season'], loc='upper right')
     plt.grid(True)
 
     figfile = BytesIO()

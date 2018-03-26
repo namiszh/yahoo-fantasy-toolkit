@@ -5,6 +5,7 @@
     :copyright: (c) 2018 by Marvin Huang
 """
 from scipy.stats import rankdata
+from sqlalchemy import func
 from app import db, yahoo_api
 from app.models import User, Team, League, Category, Stat
 
@@ -168,6 +169,12 @@ class DataManager(object):
         team_stats = self.yahoo.get_team_stat(team, week)
         for team_stat in team_stats:
             stat_id = int(team_stat['stat_id'])
+
+            # check whether need to import, will not import display only
+            stat = Category.query.get(stat_id)
+            if not stat or stat.display_only == 1:
+                continue
+
             value = team_stat['value']
             stat = Stat.query.filter_by(team_key=team.team_key, week=week, stat_id=stat_id).first()
             if stat:
@@ -191,7 +198,6 @@ class DataManager(object):
         '''compute the score for each stat each team of a week in a league'''
         stat_ids = [ int(x[0]) for x in db.session.query(Stat.stat_id.distinct()).filter(
             Stat.team_key.startswith(league.league_key), Stat.week==week).order_by(Stat.stat_id).all()]
-        # print('league stat ids', stat_ids)
 
         for stat_id in stat_ids:
             # check whether need to compute
@@ -199,11 +205,13 @@ class DataManager(object):
             if not stat or stat.display_only == 1:
                 continue
 
-            team_values = db.session.query(Stat.team_key, Stat.value).filter(
+            league_stats = db.session.query(Stat).filter(
             Stat.team_key.startswith(league.league_key+'.'), Stat.week==week, Stat.stat_id==stat_id).all()
-            teams = [x[0] for x in team_values]
-            values = [num(x[1]) for x in team_values]
+            values = [team_stat.value for team_stat in league_stats]
             scores = data_to_ranking_score(values, stat.sort_order==0)
+            for team, score in zip(league_stats, scores):
+                team.score = score
+        db.session.commit()
 
     def import_game_stat_categories(self):
         categories = self.yahoo.get_game_stat_categories()
@@ -226,6 +234,23 @@ class DataManager(object):
                 db.session.add(stat)
             # print(stat)
         db.session.commit()
+
+    def get_league_scores_by_week(self, league, week):
+        ''' return the total scores for a week of all teams in the league
+        '''
+        team_names = []
+        team_scores = []
+        for team in league.teams:
+            score = num(db.session.query((func.sum(Stat.score))).filter(Stat.team_key==team.team_key, Stat.week==week).scalar() )
+            if score:
+                team_names.append(team.name)
+                team_scores.append(score)
+
+        print('===scores of league {} for week {}'.format(league.name, week))
+        for name, score in zip(team_names, team_scores):
+            print(name, score)
+
+        return team_names, team_scores
 
     def get_initial():
         pass

@@ -13,7 +13,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 # from bokeh.embed import components
 # from datetime import datetime
 from app import app, lm
-from app.models import User
+from app.models import User, League
 from app.compute import compute_png_svg as compute
 from app.compute import get_week_score_png
 
@@ -87,9 +87,16 @@ def week(lid, week):
     session['current_league'] = lid
     session['current_week'] = week
 
-    # figdata_png = get_week_score_png(lid, week)
+    league = League.query.filter(League.league_id==lid).first()
+    title = '{}盟'.format(league.name)
+    if week==0:
+        title +=  '总战力榜'
+    else:
+        title += '第 {} 周战力榜'.format(week)
+    team_names, team_scores = dm.get_league_scores_by_week(league, week)
+    figdata_png = get_week_score_png(team_names, team_scores, title)
 
-    return render_template('index.html')
+    return render_template('index.html', result=figdata_png)
 
 
 @app.route('/logout')

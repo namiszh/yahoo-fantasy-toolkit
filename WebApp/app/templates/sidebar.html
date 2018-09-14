@@ -3,15 +3,22 @@
     <ul id="weeks">
         <br>
         <li><a href="{{ url_for('.week', lid=session['current_league'], week=0) }}">Season</a></li>
-
-        {% for i in range(session['start_week'], session['current_week']) %}
-        <li><a href="{{ url_for('.week', lid=session['current_league'], week=i) }}">Week {{i}}</a></li>
-        {% endfor %}
-
-        <li class="selected"><a href="{{ url_for('.week', lid=session['current_league'], week=session['current_week']) }}">Week {{session['current_week']}}</a></li>
-
-        {% for i in range(session['current_week']+1, session['end_week']+1) %}
-        <li><a>Week {{i}}</a></li>
+        {% for user_team in current_user.teams %}
+            {% if user_team.league.league_id==session['current_league'] %}
+                {% for i in range(user_team.league.start_week, user_team.league.end_week + 1) %}
+                    {% if i==session['current_week'] %}
+        <li class="selected">
+                    {% else %}
+        <li>
+                    {% endif %}
+                    {% if i<=user_team.league.current_week %}
+            <a href="{{ url_for('.week', lid=session['current_league'], week=i) }}">
+                    {% else %}
+            <a>
+                    {% endif %} Week {{i}}</a>
+        </li>
+                {% endfor %}
+            {% endif %}
         {% endfor %}
     </ul>
 {% else %}

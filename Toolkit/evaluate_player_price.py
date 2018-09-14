@@ -23,6 +23,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 import click
 import csv
@@ -74,7 +75,7 @@ class PriceEvaluator() :
             DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:16.0) Gecko/20121026 Firefox/16.0'
             driver = webdriver.PhantomJS()
         else:
-            chrome_options = webdriver.ChromeOptions()
+            chrome_options = Options()
             chrome_options.add_argument("--dns-prefetch-disable")
             driver = webdriver.Chrome(chrome_options=chrome_options)
             driver.set_window_size(1920, 1080)
@@ -123,27 +124,30 @@ class PriceEvaluator() :
 
         driver.get('https://basketballmonster.com/Projections.aspx')
 
-         # player filter set to "all players"
-        all_player_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[3]/div[1]/label[2]')))
-        ActionChains(driver).move_to_element(all_player_toggle).click(all_player_toggle).perform()
+        # player filter set to "all players"
+        playerFilter = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "PlayerFilterControl")))
+        playerFilterSelect = Select(playerFilter)
+        playerFilterSelect.select_by_visible_text("All Players")
 
         # set value type to 'total value'
         print("get total value ranking")
-        total_value_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[4]/div[2]/label[1]')))
-        ActionChains(driver).move_to_element(total_value_toggle).click(total_value_toggle).perform()
-        non_comparison_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]')))
-        ActionChains(driver).move_to_element(non_comparison_toggle).click(non_comparison_toggle).perform()
-        refresh_button = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[6]/input')))
+        valueType = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ValueDisplayType")))
+        valueTypeSelect = Select(valueType)
+        valueTypeSelect.select_by_visible_text("Total Value")
+        # non_comparison_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]')))
+        # ActionChains(driver).move_to_element(non_comparison_toggle).click(non_comparison_toggle).perform()
+        refresh_button = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form1"]/div[7]/div[4]/input[1]')))
         ActionChains(driver).move_to_element(refresh_button).click(refresh_button).perform()
         time.sleep(8)
         totalContent = driver.page_source
 
         print("get per game value ranking")
-        per_game_value_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[4]/div[2]/label[2]')))
-        ActionChains(driver).move_to_element(per_game_value_toggle).click(per_game_value_toggle).perform()
-        non_comparison_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]')))
-        ActionChains(driver).move_to_element(non_comparison_toggle).click(non_comparison_toggle).perform()
-        refresh_button = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[6]/input')))
+        valueType = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, "ValueDisplayType")))
+        valueTypeSelect = Select(valueType)
+        valueTypeSelect.select_by_visible_text("Per Game Value")
+        # non_comparison_toggle = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ContentPlaceHolder1_UpdatePanel"]/div[5]/div/label[4]')))
+        # ActionChains(driver).move_to_element(non_comparison_toggle).click(non_comparison_toggle).perform()
+        refresh_button = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="form1"]/div[7]/div[4]/input[1]')))
         ActionChains(driver).move_to_element(refresh_button).click(refresh_button).perform()
         time.sleep(8)
         perGameContent = driver.page_source
@@ -187,8 +191,9 @@ class PriceEvaluator() :
     def _evaluate_player_prices(self, rawValues):
 
         # user standard score, not raw score to evaluate price
-        zScores = stats.zscore(rawValues)
-        # zScores = rawValues
+        # scores = stats.zscore(rawValues)
+        # user raw values
+        scores = rawValues
 
         total_player_num = self.team_num * self.player_num_per_team
         total_salary_cap = self.team_num * self.salary_cap_per_team
@@ -203,37 +208,29 @@ class PriceEvaluator() :
         print('The number of top player:', top_player_num)
         print('Total average price of top player:', top_player_ave_price)
 
-        # there can be two ways to map the average price to a player:
-        #    o. median player. 
-        #       example: 
-        #         it's the 3rd player if there are 5 players in total.
-        #    o. the player of which his value is closest to the average value.
-        #       example:
-        #         given value list [7, 3, 2, 2, 1], then the second player
-        #         is selected to map the average price.
-        #         
-        # I use the first way for now because we also use z score, not raw score.
-        median_player_idx = top_player_num // 2
+        # calculation solution:
+        #  1. the last top palyer's price is 2.(one dollar player is excluded here)
+        #  2. calcualte the total value of all top player - suppose the last top player's value is 0
 
-        # the index of the first one dollar player.
-        first_one_dollar_player_idx = top_player_num
-
-        # convert the z value to price
-        # the formula is Price = a + b* zScore
-        # and two  equation:
-        #  top_player_ave_price = a + b* zScores[median_player_idx]
-        #  1                    = a + b* zScores[first_one_dollar_player_idx]
-        #  thus we can calculate a and b.
-        b = (top_player_ave_price - 1) / (zScores[median_player_idx] - zScores[first_one_dollar_player_idx])
-        a = top_player_ave_price - b * zScores[median_player_idx]
-
-        prices = []
-
-        for i, score in enumerate(zScores):
+        top_player_total_value = 0
+        for i, score in enumerate(scores):
 
             # make $1 player to 1, and negative price to zero
             if i < top_player_num:
-                price = round(a + b * score)
+                top_player_total_value += (score - scores[top_player_num])
+            else:
+                break
+
+        a = 2
+        b = top_player_budget / top_player_total_value;
+
+        prices = []
+
+        for i, score in enumerate(scores):
+
+            # make $1 player to 1, and negative price to zero
+            if i < top_player_num:
+                price = round(a + b * (score - scores[top_player_num]))
             elif i < total_player_num:
                 price = 1
             else:
@@ -253,7 +250,7 @@ class PriceEvaluator() :
             name_to_price_map[name] = price
 
         csv_file_name = '{}_{}_{}_{}_price.csv'.format(self.team_num, self.player_num_per_team, self.salary_cap_per_team, self.one_dollar_player_num)
-        print('Write to result to csv file "', csv_file_name, '"')
+        print('Write to result to csv file "{}"'.format(csv_file_name))
         with open(csv_file_name, 'w', newline='') as csvfile:
             fieldnames = ['Name', 'Price_Total', 'Price_PerGame']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

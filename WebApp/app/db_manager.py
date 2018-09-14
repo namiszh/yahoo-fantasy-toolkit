@@ -151,8 +151,12 @@ class DataManager(object):
         if league.teams:
             last_imported_week = self._get_last_imported_week(league.teams[0])
 
+            # for test
+            start_week = last_imported_week
+            end_week = league.current_week + 1
+
             # for single weeks
-            for week in range(last_imported_week,league.current_week + 1):
+            for week in range(start_week, end_week):
                 for team in league.teams:
                     self.import_team_stats_by_week(team, week)
 
@@ -163,6 +167,13 @@ class DataManager(object):
                 self.import_team_stats_by_week(team, 0)
 
             self.compute_league_score(league, 0)
+
+    def import_league_stats_by_week(self, league, week):
+        for team in league.teams:
+            self.import_team_stats_by_week(team, week)
+
+        # compute score
+        self.compute_league_score(league, week)
 
     def import_team_stats_by_week(self, team, week):
         # print('import stat for team {} week = {}'.format(team.team_key, week))
@@ -235,9 +246,13 @@ class DataManager(object):
             # print(stat)
         db.session.commit()
 
-    def get_league_scores_by_week(self, league, week):
+    def get_league_total_scores_by_week(self, league, week):
         ''' return the total scores for a week of all teams in the league
         '''
+        # validate week
+        if week > league.current_week:
+            return None, None
+
         team_names = []
         team_scores = []
         for team in league.teams:
@@ -246,11 +261,58 @@ class DataManager(object):
                 team_names.append(team.name)
                 team_scores.append(score)
 
-        print('===scores of league {} for week {}'.format(league.name, week))
-        for name, score in zip(team_names, team_scores):
-            print(name, score)
+        # print('===scores of league {} for week {}'.format(league.name, week))
+        # for name, score in zip(team_names, team_scores):
+        #     print(name, score)
 
         return team_names, team_scores
+
+    def get_league_stat_scores_by_week(self, league, week):
+        ''' return the stats and scores of each stat category for a week of all teams in the league
+        '''
+        # validate week
+        if week > league.current_week:
+            return None, None
+
+        team_names = []
+        team_scores = []
+        for team in league.teams:
+            query = db.session.query(Category.display_name, Stat.value, Stat.score).join(Stat).join(Category).filter(Stat.team_key==team.team_key, Stat.week==week).order_by(Stat.stat_id).all()
+            print("===============stat value, score of team", query)
+            # if query:
+                # team_names.append(team.name)
+                # team_scores.append(score)
+
+        # print('===scores of league {} for week {}'.format(league.name, week))
+        # for name, score in zip(team_names, team_scores):
+        #     print(name, score)
+
+        return team_names, team_scores
+
+    def get_stat_scores_by_team(self, team):
+        
+        weeks = []
+        stat_scores = {}
+
+        stat_ids = [ int(x[0]) for x in db.session.query(Stat.stat_id.distinct()).filter(
+            Stat.team_key==team.team_key).order_by(Stat.stat_id).all()]
+
+        for stat_id in stat_ids:
+            stat = Category.query.get(stat_id)
+            if not stat or stat.display_only == 1:
+                continue
+
+            query = db.session.query(Stat.week, Stat.score).filter(
+                Stat.team_key==team.team_key, Stat.stat_id==stat_id, Stat.week>0).order_by(Stat.week).all()
+            print(query)
+            if not weeks:
+                weeks = [x[0] for x in query]
+            scores = [ num(x[1]) for x in query]
+
+            stat_scores[stat.display_name] = scores
+
+        # print(weeks, stat_scores)
+        return weeks, stat_scores
 
     def get_initial():
         pass
@@ -258,10 +320,10 @@ class DataManager(object):
     def _get_last_imported_week(self, team):
         week = db.session.query(Stat.week.distinct()).filter_by(team_key=team.team_key).order_by(Stat.week.desc()).first()
         if week:
-            # print('========== stats of team {} has been imported to week {} =========='.format(team.name , week) )
+            print('========== stats of team {} has been imported to week {} =========='.format(team.name , week) )
             return week[0]
         else:
-            # print('============ no stat has been imported for team {} yet ============'.format(team.name) )
+            print('============ no stat has been imported for team {} yet ============'.format(team.name) )
             return team.league.start_week
 
 

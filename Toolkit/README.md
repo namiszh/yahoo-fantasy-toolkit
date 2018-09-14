@@ -106,8 +106,7 @@ Starting active players for: Fri, Nov 3
 ## Dependencies
 
 * [Python](https://www.python.org/)
-* [Click](http://click.pocoo.org/)  `pip install click`
-* [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/) `pip install selenium`
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) download chromedriver and put it in PATH
-* [PhantomJS](http://phantomjs.org/)  download phantomjs.exe and put it in PATH
-* [BeautifulSoup](https://pypi.python.org/pypi/beautifulsoup4/) `pip install beautifulsoup4`
+* [PhantomJS](http://phantomjs.org/download.html)  download phantomjs.exe and put it in PATH
+* Others using pip `pip install -r requirements.txt`
+

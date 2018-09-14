@@ -13,9 +13,8 @@ from flask_login import login_user, logout_user, current_user, login_required
 # from bokeh.embed import components
 # from datetime import datetime
 from app import app, lm
-from app.models import User, League
-from app.compute import compute_png_svg as compute
-from app.compute import get_week_score_png
+from app.models import User, League, Team
+from app.chart import *
 
 from app.yahoo_oauth import YahooOAuth
 from app.yahoo_api import YahooAPI
@@ -70,8 +69,12 @@ def team(lid, tid):
     session['current_league'] = lid
     session['current_team'] = tid
 
-    figdata_png = compute()
-    return render_template('index.html', result=figdata_png)
+    league = League.query.filter(League.league_id==lid).first()
+    team = Team.query.filter(Team.team_id==tid).first()
+
+    weeks, stat_scores = dm.get_stat_scores_by_team(team)
+    figdata_png = get_team_stats_chart(weeks, stat_scores)
+    return render_template('index.html', current_league=league, result=figdata_png)
 
 
 @app.route('/<int:lid>/week=<int:week>')
@@ -88,15 +91,16 @@ def week(lid, week):
     session['current_week'] = week
 
     league = League.query.filter(League.league_id==lid).first()
-    title = '{}盟'.format(league.name)
+    title = league.name
     if week==0:
         title +=  '总战力榜'
     else:
-        title += '第 {} 周战力榜'.format(week)
-    team_names, team_scores = dm.get_league_scores_by_week(league, week)
-    figdata_png = get_week_score_png(team_names, team_scores, title)
+        title += '第{}周战力榜'.format(week)
+    team_names, team_total_scores = dm.get_league_total_scores_by_week(league, week)
+    figdata_png = get_week_score_bar_chart(team_names, team_total_scores, title)
 
-    return render_template('index.html', result=figdata_png)
+    team_names, team_stat_scores = dm.get_league_stat_scores_by_week(league, week)
+    return render_template('index.html', current_league=league, result=figdata_png, stats=None, scores=None)
 
 
 @app.route('/logout')

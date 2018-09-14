@@ -67,23 +67,12 @@
                 {% include 'sidebar.html' %}
             </div>
             <div id="main-content">
-                <h2 align="center">
                 {% if session['show_type'] == 'week' %}
-                    {% if session['current_week'] == 0 %}
-                        总战力榜
-                    {% else %}
-                        第{{session['current_week']}}周战力榜
-                    {% endif %}
+                    {% include 'powerranking.html' %}
                 {% else %}
-                    {% for user_team in user_teams %}
-                        {% if user_team.league.league_id==session['current_league'] %}
-                            {{user_team.league.name}}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                <h2/>
-                {% if result != None %}
+                    {% if result != None %}
                 <img src="data:image/png;base64,{{ result }}" width="100%">
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

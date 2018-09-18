@@ -17,7 +17,7 @@ import pandas as pd
 def output(file_name, names, orders) :
 
     print('\n============== 抽签结果 ============== ')
-    with open(file_name, 'w') as file:
+    with open(file_name, 'w', encoding='utf-8') as file:
 
         index = 1;
         while index <= len(names):

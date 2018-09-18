@@ -18,7 +18,7 @@ def output(file_name, leagues) :
 
     print('============ 分组结果 ============')
 
-    with open(file_name, 'w') as file:
+    with open(file_name, 'w', encoding='utf-8') as file:
         for x in range(0, len(leagues)):
             line = '\n============ 第{}组 (共{}人)============'.format(x+1, len(leagues[x]))
             print(line)

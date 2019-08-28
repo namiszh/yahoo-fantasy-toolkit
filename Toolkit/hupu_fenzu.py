@@ -85,7 +85,7 @@ def divideLeagueByRandom(initial_names, n):
 @click.option('--t', type=bool, default=False, prompt='需要分档吗?')
 def main(f, n, t):
     # read initial name from file.
-    with open(f, 'r') as file:
+    with open(f, mode="r", encoding="utf-8") as file:
         content = file.readlines()
     # you may also want to remove whitespace characters like `\n` at the end of each line
     initial_names = [x.strip() for x in content]

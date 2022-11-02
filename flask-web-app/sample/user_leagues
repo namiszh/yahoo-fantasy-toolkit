@@ -1,0 +1,102 @@
+{
+    'fantasy_content': {
+        'xml:lang': 'en-US',
+        'yahoo:uri': '/fantasy/v2/users;use_login=1/games;game_keys=nba/leagues',
+        'users': {
+            '0': {
+                'user': [{
+                    'guid': 'EQMHXVGZ65XDJ5G57ZRRBKXUTM'
+                }, {
+                    'games': {
+                        '0': {
+                            'game': [{
+                                'game_key': '418',
+                                'game_id': '418',
+                                'name': 'Basketball',
+                                'code': 'nba',
+                                'type': 'full',
+                                'url': 'https://basketball.fantasysports.yahoo.com/nba',
+                                'season': '2022',
+                                'is_registration_over': 0,
+                                'is_game_over': 0,
+                                'is_offseason': 0,
+                                'is_live_draft_lobby_active': 1
+                            }, {
+                                'leagues': {
+                                    '0': {
+                                        'league': [{
+                                            'league_key': '418.l.23727',
+                                            'league_id': '23727',
+                                            'name': 'Never Ending',
+                                            'url': 'https://basketball.fantasysports.yahoo.com/nba/23727',
+                                            'logo_url': 'https://yahoofantasysports-res.cloudinary.com/image/upload/t_s192sq/fantasy-logos/56477424891_aa0cec.png',
+                                            'password': '',
+                                            'draft_status': 'postdraft',
+                                            'num_teams': 18,
+                                            'edit_key': '2022-10-30',
+                                            'weekly_deadline': '',
+                                            'league_update_timestamp': '1667022700',
+                                            'scoring_type': 'head',
+                                            'league_type': 'private',
+                                            'renew': '410_18179',
+                                            'renewed': '',
+                                            'felo_tier': 'gold',
+                                            'iris_group_chat_id': '',
+                                            'short_invitation_url': 'https://basketball.fantasysports.yahoo.com/nba/23727/invitation?key=5eeb05185aa1ab5c&ikey=b02fe64ebe73188a',
+                                            'allow_add_to_dl_extra_pos': 0,
+                                            'is_pro_league': '0',
+                                            'is_cash_league': '0',
+                                            'current_week': 2,
+                                            'start_week': '1',
+                                            'start_date': '2022-10-18',
+                                            'end_week': '23',
+                                            'end_date': '2023-04-02',
+                                            'game_code': 'nba',
+                                            'season': '2022'
+                                        }]
+                                    },
+                                    '1': {
+                                        'league': [{
+                                            'league_key': '418.l.35600',
+                                            'league_id': '35600',
+                                            'name': 'Hupu Kappa 22-23',
+                                            'url': 'https://basketball.fantasysports.yahoo.com/nba/35600',
+                                            'logo_url': False,
+                                            'draft_status': 'postdraft',
+                                            'num_teams': 18,
+                                            'edit_key': '2022-10-30',
+                                            'weekly_deadline': '',
+                                            'league_update_timestamp': '1667022645',
+                                            'scoring_type': 'head',
+                                            'league_type': 'private',
+                                            'renew': '410_36211',
+                                            'renewed': '',
+                                            'felo_tier': 'platinum',
+                                            'iris_group_chat_id': '',
+                                            'allow_add_to_dl_extra_pos': 0,
+                                            'is_pro_league': '0',
+                                            'is_cash_league': '0',
+                                            'current_week': 2,
+                                            'start_week': '1',
+                                            'start_date': '2022-10-18',
+                                            'end_week': '24',
+                                            'end_date': '2023-04-09',
+                                            'game_code': 'nba',
+                                            'season': '2022'
+                                        }]
+                                    },
+                                    'count': 2
+                                }
+                            }]
+                        },
+                        'count': 1
+                    }
+                }]
+            },
+            'count': 1
+        },
+        'time': '57.766914367676ms',
+        'copyright': 'Data provided by Yahoo! and STATS, LLC',
+        'refresh_rate': '60'
+    }
+}

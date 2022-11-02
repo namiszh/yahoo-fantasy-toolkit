@@ -1,0 +1,17 @@
+{
+    'fantasy_content': {
+        'xml:lang': 'en-US',
+        'yahoo:uri': '/fantasy/v2/users;use_login=1',
+        'users': {
+            '0': {
+                'user': [{
+                    'guid': 'EQMHXVGZ65XDJ5G57ZRRBKXUTM'
+                }]
+            },
+            'count': 1
+        },
+        'time': '15.329837799072ms',
+        'copyright': 'Data provided by Yahoo! and STATS, LLC',
+        'refresh_rate': '60'
+    }
+}

@@ -1,0 +1,353 @@
+{
+    'fantasy_content': {
+        'xml:lang': 'en-US',
+        'yahoo:uri': '/fantasy/v2/game/nba/stat_categories',
+        'game': [{
+            'game_key': '418',
+            'game_id': '418',
+            'name': 'Basketball',
+            'code': 'nba',
+            'type': 'full',
+            'url': 'https://basketball.fantasysports.yahoo.com/nba',
+            'season': '2022',
+            'is_registration_over': 0,
+            'is_game_over': 0,
+            'is_offseason': 0,
+            'is_live_draft_lobby_active': 1
+        }, {
+            'stat_categories': {
+                'stats': [{
+                    'stat': {
+                        'stat_id': 0,
+                        'name': 'Games Played',
+                        'display_name': 'GP',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 1,
+                        'name': 'Games Started',
+                        'display_name': 'GS',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 2,
+                        'name': 'Minutes Played',
+                        'display_name': 'MIN',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 3,
+                        'name': 'Field Goals Attempted',
+                        'display_name': 'FGA',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 4,
+                        'name': 'Field Goals Made',
+                        'display_name': 'FGM',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 5,
+                        'name': 'Field Goal Percentage',
+                        'display_name': 'FG%',
+                        'sort_order': '1',
+                        'is_composite_stat': 1,
+                        'base_stats': [{
+                            'base_stat': {
+                                'stat_id': '3'
+                            }
+                        }, {
+                            'base_stat': {
+                                'stat_id': '4'
+                            }
+                        }],
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 6,
+                        'name': 'Free Throws Attempted',
+                        'display_name': 'FTA',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 7,
+                        'name': 'Free Throws Made',
+                        'display_name': 'FTM',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 8,
+                        'name': 'Free Throw Percentage',
+                        'display_name': 'FT%',
+                        'sort_order': '1',
+                        'is_composite_stat': 1,
+                        'base_stats': [{
+                            'base_stat': {
+                                'stat_id': '6'
+                            }
+                        }, {
+                            'base_stat': {
+                                'stat_id': '7'
+                            }
+                        }],
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 9,
+                        'name': '3-point Shots Attempted',
+                        'display_name': '3PTA',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 10,
+                        'name': '3-point Shots Made',
+                        'display_name': '3PTM',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 11,
+                        'name': '3-point Percentage',
+                        'display_name': '3PT%',
+                        'sort_order': '1',
+                        'is_composite_stat': 1,
+                        'base_stats': [{
+                            'base_stat': {
+                                'stat_id': '9'
+                            }
+                        }, {
+                            'base_stat': {
+                                'stat_id': '10'
+                            }
+                        }],
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 12,
+                        'name': 'Points Scored',
+                        'display_name': 'PTS',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 13,
+                        'name': 'Offensive Rebounds',
+                        'display_name': 'OREB',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 14,
+                        'name': 'Defensive Rebounds',
+                        'display_name': 'DREB',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 15,
+                        'name': 'Total Rebounds',
+                        'display_name': 'REB',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 16,
+                        'name': 'Assists',
+                        'display_name': 'AST',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 17,
+                        'name': 'Steals',
+                        'display_name': 'ST',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 18,
+                        'name': 'Blocked Shots',
+                        'display_name': 'BLK',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 19,
+                        'name': 'Turnovers',
+                        'display_name': 'TO',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 20,
+                        'name': 'Assist/Turnover Ratio',
+                        'display_name': 'A/T',
+                        'sort_order': '1',
+                        'is_composite_stat': 1,
+                        'base_stats': [{
+                            'base_stat': {
+                                'stat_id': '16'
+                            }
+                        }, {
+                            'base_stat': {
+                                'stat_id': '19'
+                            }
+                        }],
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 21,
+                        'name': 'Personal Fouls',
+                        'display_name': 'PF',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 22,
+                        'name': 'Times Fouled Out',
+                        'display_name': 'DISQ',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 23,
+                        'name': 'Technical Fouls',
+                        'display_name': 'TECH',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 24,
+                        'name': 'Ejections',
+                        'display_name': 'EJCT',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 25,
+                        'name': 'Flagrant Fouls',
+                        'display_name': 'FF',
+                        'sort_order': '0',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 26,
+                        'name': 'Minutes Per Game',
+                        'display_name': 'MPG',
+                        'sort_order': '1'
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 27,
+                        'name': 'Double-Doubles',
+                        'display_name': 'DD',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }, {
+                    'stat': {
+                        'stat_id': 28,
+                        'name': 'Triple-Doubles',
+                        'display_name': 'TD',
+                        'sort_order': '1',
+                        'position_types': [{
+                            'position_type': 'P'
+                        }]
+                    }
+                }]
+            }
+        }],
+        'time': '12.028932571411ms',
+        'copyright': 'Data provided by Yahoo! and STATS, LLC',
+        'refresh_rate': '60'
+    }
+}

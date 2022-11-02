@@ -13,3 +13,5 @@ __pycache__/
 Toolkit/*.csv
 WebApp/db_repository
 WebApp/venv
+
+flask-web-app/venv

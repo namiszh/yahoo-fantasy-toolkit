@@ -10,8 +10,9 @@ from flask_login import login_required
 import pandas as pd
 from pandas import DataFrame
 from app import app, yHandler
-from chart.compute import stat_to_score, league_bar_chart
+from chart.compute import stat_to_score
 from chart.radar_chart import league_radar_charts
+from chart.bar_chart import league_bar_chart
 
 @app.route('/')
 @app.route('/index')
@@ -96,17 +97,18 @@ def week(league_key, week):
     total_score = stat_to_score(total_df, sort_orders)
     total_score = total_score.round(decimals=1).astype(object)  # remove trailing .0
 
+    bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], '战力榜', week)
+    radar_charts = league_radar_charts(week_score, total_score, week)
 
+    min_week = None
+    max_week = None
+    for league in leagues:
+        if league['league_key'] == league_key:
+            min_week = int(league['start_week'])
+            max_week = int(league['current_week'])
+            break
 
-    bar_chart = league_bar_chart(team_names, week_score['Total'], '战力榜')
-    radar_charts = league_radar_charts(week_score, total_score)
-
-    # print(bar_chart)
-    # print(week_df)
-    # print(week_score)
-
-    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, raw_stats=week_df, ranking_scores = week_score, bar_chart = bar_chart, radar_charts = radar_charts)
-    # return render_template('main2.html', team_names=team_names, stat_names=week_raw_data.keys(), raw_stats=week_stats, scores = week_score)
+    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, raw_stats=week_df, ranking_scores = week_score, bar_chart = bar_chart, radar_charts = radar_charts )
 
 @app.route('/<league_key>/<team_id>')
 def team(lid, tid):

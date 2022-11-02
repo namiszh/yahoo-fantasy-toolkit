@@ -6,28 +6,28 @@ import base64
 import matplotlib.pyplot as plt
 import numpy as np
 
-def league_radar_charts(week_df, total_df):
+def league_radar_charts(week_df, total_df, week):
     # print(week_df)
     # print(total_df)
     charts = []
 
     # get the stat names, need to remove the last column 'total'
     stat_names = week_df.columns.values.tolist()[:-1]
-    print(stat_names)
+    # print(stat_names)
     team_names = week_df.index.tolist()
-    print(team_names)
+    # print(team_names)
 
     for team_name in team_names:
         # get the stat scores, need to remove the last column 'total'
         week_score = week_df.loc[team_name].values.tolist()[:-1]
         total_score = total_df.loc[team_name].values.tolist()[:-1]
-        chart = get_radar_chart(stat_names, team_name, total_score, week_score, len(team_names))
+        chart = get_radar_chart(stat_names, team_name, total_score, week_score, len(team_names), week)
         charts.append(chart)
     
     return charts
 
 
-def get_radar_chart(labels, title, season_values, week_values, limit):
+def get_radar_chart(labels, title, season_values, week_values, limit, week):
     # print(season_values)
     # print(week_values)
     # print(limit)
@@ -49,10 +49,10 @@ def get_radar_chart(labels, title, season_values, week_values, limit):
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
 
-    ax.plot(angles, season_values, color='#1aaf6c', linewidth=1, label='Total')
+    ax.plot(angles, season_values, color='#1aaf6c', linewidth=1, label='Season')
     ax.fill(angles, season_values, color='#1aaf6c', alpha=0.5)
 
-    ax.plot(angles, week_values, color='#429bf4', linewidth=1, label='Week')
+    ax.plot(angles, week_values, color='#429bf4', linewidth=1, label=('Week '+ str(week)))
     ax.fill(angles, week_values, color='#429bf4', alpha=0.25)
 
     # Fix axis to go in the right order and start at 12 o'clock.

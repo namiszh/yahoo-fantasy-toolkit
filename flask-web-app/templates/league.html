@@ -67,15 +67,23 @@
             <div class="col">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        {% if min_week < current_week:  %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('.week', league_key=current_league_key, week=current_week-1) }}">Previous</a></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                        {% endif %}
                         <li class="page-item"><a class="page-link" href="#">week {{current_week}}</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        {% if max_week > current_week:  %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('.week', league_key=current_league_key, week=current_week+1) }}">Next</a></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link disabled" href="#">Next</a></li>
+                        {% endif %}
                       </ul>
                 </nav>
             </div>
             <div class="col text-end">
                 <div class="btn-group">
-                    <a href="#ranking_chart" class="btn btn-primary active" aria-current="page">Bar</a>
+                    <a href="#ranking_chart" class="btn btn-primary">Bar</a>
                     <a href="#radar_charts" class="btn btn-primary">Radar</a>
                     <a href="#week_rank_score" class="btn btn-primary">Score</a>
                     <a href="#week_raw_stat" class="btn btn-primary">Stat</a>

@@ -5,7 +5,7 @@ from io import BytesIO
 import base64
 import matplotlib.pyplot as plt
 import numpy as np
-
+from app import cnFontProp
 
 
 def league_bar_chart(names, week_scores, total_scores, title, week):
@@ -20,7 +20,7 @@ def league_bar_chart(names, week_scores, total_scores, title, week):
 
     # Create a bar with week score,
     # in position pos,
-    plt.bar([p - width/2 for p in pos], total_scores, width, alpha=0.5, color='#1aaf6c', edgecolor='#1aaf6c', label='Season')
+    plt.bar([p - width/2 for p in pos], total_scores, width, alpha=0.5, color='#1aaf6c', edgecolor='#1aaf6c', label='Total')
     plt.bar([p + width/2 for p in pos], week_scores, width, alpha=0.25, color='#429bf4', edgecolor='#429bf4', label='Week')
 
 
@@ -28,15 +28,15 @@ def league_bar_chart(names, week_scores, total_scores, title, week):
     ax.set_ylabel('Score')
 
     # Set the chart's title
-    ax.set_title(title, name='Arial')
+    ax.set_title(title, fontproperties = cnFontProp)
 
     # Make the y-axis (0-100) labels smaller.
-    ax.tick_params(labelsize=8)
+    # ax.tick_params(labelsize=8)
 
     # Set the position of the x ticks
     ax.set_xticks([p for p in pos])
     # Set the labels for the x ticks
-    ax.set_xticklabels(names, rotation=45)
+    ax.set_xticklabels(names, rotation=30, ha='right', fontproperties = cnFontProp)
 
 
 
@@ -45,7 +45,7 @@ def league_bar_chart(names, week_scores, total_scores, title, week):
     # plt.ylim(0, 180 )
 
     # Adding the legend and showing the plot
-    plt.legend(['Season', 'Week '+ str(week)], loc='upper right')
+    plt.legend(['Total', 'Week '+ str(week)], loc='upper right')
     plt.grid(linestyle='--', linewidth=1, axis='y', alpha=0.7)
 
     figfile = BytesIO()

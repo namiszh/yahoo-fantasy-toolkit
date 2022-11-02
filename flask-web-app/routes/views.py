@@ -108,7 +108,7 @@ def week(league_key, week):
             max_week = int(league['current_week'])
             break
 
-    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, raw_stats=week_df, ranking_scores = week_score, bar_chart = bar_chart, radar_charts = radar_charts )
+    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, bar_chart = bar_chart, radar_charts = radar_charts )
 
 @app.route('/<league_key>/<team_id>')
 def team(lid, tid):

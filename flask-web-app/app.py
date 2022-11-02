@@ -10,7 +10,7 @@ from flask import Flask
 from flask_login import LoginManager
 from yahoo.oauth import YOAuth
 from yahoo.yhandler import YHandler
-
+from matplotlib import font_manager
 
 app = Flask(__name__)
 
@@ -20,6 +20,11 @@ app.config.from_object('config')
 # Initialize a Yahoo OAuth object
 yOauth = YOAuth(app.config['CREDENTIALS_FILE'])
 yHandler = YHandler(yOauth)
+
+print(app.config['CHINESE_FONT_FILE'])
+cnFontProp = font_manager.FontProperties(fname=app.config['CHINESE_FONT_FILE'])
+# cnFontProp.set_family('SimHei')
+# cnFontProp.set_size(8)
 
 # db = SQLAlchemy(app)
 lm = LoginManager()

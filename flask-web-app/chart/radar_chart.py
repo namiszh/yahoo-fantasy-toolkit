@@ -5,6 +5,7 @@ from io import BytesIO
 import base64
 import matplotlib.pyplot as plt
 import numpy as np
+from app import cnFontProp
 
 def league_radar_charts(week_df, total_df, week):
     # print(week_df)
@@ -49,7 +50,7 @@ def get_radar_chart(labels, title, season_values, week_values, limit, week):
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
 
-    ax.plot(angles, season_values, color='#1aaf6c', linewidth=1, label='Season')
+    ax.plot(angles, season_values, color='#1aaf6c', linewidth=1, label='Total')
     ax.fill(angles, season_values, color='#1aaf6c', alpha=0.5)
 
     ax.plot(angles, week_values, color='#429bf4', linewidth=1, label=('Week '+ str(week)))
@@ -91,8 +92,7 @@ def get_radar_chart(labels, title, season_values, week_values, limit, week):
     # Change the background color inside the circle itself.
     ax.set_facecolor('#FAFAFA')
 
-    # Add title.
-    ax.set_title(title, y=1.08)
+    ax.set_title(title, y=1.08, fontproperties = cnFontProp)
 
     # Add a legend as well.
     ax.legend(loc='upper right', frameon=False, bbox_to_anchor=(1.15, 1.1))

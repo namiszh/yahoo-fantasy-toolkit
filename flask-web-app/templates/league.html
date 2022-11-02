@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NBA Fantasy</title>
+    <title>范特西研究站</title>
     <link href="../static/image/app_icon.jpg" rel="shortcut icon" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
@@ -36,7 +36,7 @@
         <!-- Top Header -->
         <div class="top-header py-3">
             <div class="container">
-                <h1>Yahoo NBA Fantasy Data Analysis</h1>
+                <img src="../static/image/site.png" class="img-fluid mw-25"/>
             </div>
         </div>
 
@@ -85,8 +85,8 @@
                 <div class="btn-group">
                     <a href="#ranking_chart" class="btn btn-primary">Bar</a>
                     <a href="#radar_charts" class="btn btn-primary">Radar</a>
-                    <a href="#week_rank_score" class="btn btn-primary">Score</a>
-                    <a href="#week_raw_stat" class="btn btn-primary">Stat</a>
+                    <a href="#ranking_score" class="btn btn-primary">Rank</a>
+                    <a href="#raw_stats" class="btn btn-primary">Stat</a>
                 </div>
             </div>
         </div>
@@ -94,17 +94,17 @@
         <!-- Main Content -->
         <div class="main">
             <div class="container">
-
-
-                <div class="row">
-                    <div class="col" id="ranking_chart">
+                <div class="row mb-4" id="ranking_chart">&nbsp;</div>
+                    <div class="row row-md-3 row-sm-3 row-xs-3">
+                    <div class="col">
                         {% if bar_chart != None %}
                         <img src="data:image/png;base64,{{ bar_chart }}">
                         {% endif %}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col" id="radar_charts">
+                <div class="row mb-4" id="radar_charts">&nbsp;</div>
+                    <div class="row row-md-3 row-sm-3 row-xs-3">
+                    <div class="col">
                         {% for chart in radar_charts %}
                         {% if loop.index0 % 3 == 0:  %}
                         <div class="row">
@@ -118,16 +118,26 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col" id="week_rank_score">
-                        <H4>Ranking Score</H4>
-                        {{ ranking_scores.to_html(classes="table table-striped") | safe}}
+                <div class="row mb-4" id="ranking_score">&nbsp;</div>
+                    <div class="row row-md-3 row-sm-3 row-xs-3">
+                    <div class="col">
+                        <H4>Rank - Week {{current_week}}</H4>
+                        {{ week_rank.to_html(classes="table table-striped table-sm") | safe}}
+                    </div>
+                    <div class="col">
+                        <H4>Rank - Total</H4>
+                        {{ total_rank.to_html(classes="table table-striped table-sm") | safe}}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col" id="week_raw_stat">
-                        <H4>Raw Data</H4>
-                        {{ raw_stats.to_html(classes="table table-striped") | safe}}
+                <div class="row mb-4" id="raw_stats">&nbsp;</div>
+                    <div class="row row-md-3 row-sm-3 row-xs-3">
+                    <div class="col">
+                        <H4>Stat - Week {{current_week}}</H4>
+                        {{ week_stats.to_html(classes="table table-striped table-sm") | safe}}
+                    </div>
+                    <div class="col">
+                        <H4>Stat - Total</H4>
+                        {{ total_stats.to_html(classes="table table-striped table-sm") | safe}}
                     </div>
                 </div>
             </div>

@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>范特西研究站</title>
-    <link href="../static/image/app_icon.jpg" rel="shortcut icon" type="image/x-icon" />
+    <title>范特西研究室</title>
+    <link href="../static/image/favicon.png" rel="shortcut icon" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 </head>
@@ -14,6 +14,9 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient">
             <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="../static/image/brand.png" alt="Bootstrap">
+                  </a>
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a href="#" class="nav-link">About</a>
@@ -34,33 +37,34 @@
             </div>
         </nav>
         <!-- Top Header -->
-        <div class="top-header py-3" style="background-color: #5584AC;">
+        <div class="top-header py-2 bg-gradient" style="background-color: #edecf3;">
             <div class="container">
-                <img src="../static/image/site.png" class="img-fluid mw-25"/>
+                <h6>A place for Yahoo NBA fantasy managers to analyze data</h6>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main">
             <div class="container text-center">
+                <p></p>
                 <h4>This is a demo. If you want to have a try, click the sign in button below</h4>
                 <a href="/login">
-                    <img src="../static/image/signIn.png" class="img-fluid mw-25"/>
+                    <img src="../static/image/signIn.png" class="img-fluid mw-25" style="height: 40px;"/>
                 </a>
                 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active" data-bs-interval="3000">
-                            <img src="../static/image/bar_chart.PNG" class="d-block h-50">
+                            <img src="../static/image/bar_chart.PNG">
                         </div>
                         <div class="carousel-inner">
                             <div class="carousel-item" data-bs-interval="3000">
-                                <img src="../static/image/rader_chart.PNG" class="d-block h-50">
+                                <img src="../static/image/rader_chart.PNG">
                             </div>
                             <div class="carousel-item" data-bs-interval="3000">
-                                <img src="../static/image/ranking_score.png" class="d-block h-50">
+                                <img src="../static/image/ranking_score.png">
                             </div>
                             <div class="carousel-item" data-bs-interval="3000">
-                                <img src="../static/image/raw_data.PNG" class="d-block h-50">
+                                <img src="../static/image/raw_data.PNG">
                             </div>
                         </div>
                     </div>

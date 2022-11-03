@@ -50,7 +50,19 @@ def league(league_key):
 @app.route('/<league_key>/week=<int:week>')
 def week(league_key, week):
     print('route to league with league_key=', league_key, 'week=', week)
+
+    # get league information
     leagues = yHandler.get_leagues()
+    min_week = None
+    max_week = None
+    league_name = None
+    for league in leagues:
+        if league['league_key'] == league_key:
+            min_week = int(league['start_week'])
+            max_week = int(league['current_week'])
+            league_name = league['name']
+            break
+
     teams = yHandler.get_league_teams(league_key)
     stat_categories = yHandler.get_game_stat_categories()
     team_names = []
@@ -97,16 +109,8 @@ def week(league_key, week):
     total_score = stat_to_score(total_df, sort_orders)
     total_score = total_score.round(decimals=1).astype(object)  # remove trailing .0
 
-    bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], '战力榜', week)
+    bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], league_name, week)
     radar_charts = league_radar_charts(week_score, total_score, week)
-
-    min_week = None
-    max_week = None
-    for league in leagues:
-        if league['league_key'] == league_key:
-            min_week = int(league['start_week'])
-            max_week = int(league['current_week'])
-            break
 
     return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, bar_chart = bar_chart, radar_charts = radar_charts )
 

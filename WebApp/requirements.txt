@@ -1,9 +1,0 @@
-Flask==0.12.3
-Flask-Login==0.4.1
-Flask-SQLAlchemy==2.3.2
-matplotlib==2.2.0
-numpy==1.14.0
-pandas==0.22.0
-rauth==0.7.3
-scipy==1.0.0
-sqlalchemy-migrate==0.11.0

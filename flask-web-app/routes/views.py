@@ -5,9 +5,12 @@
     copyright: (c) 2022 by Shaozuo Huang
 """
 
+from calendar import weekday
 from flask import render_template, url_for, redirect
 from flask_login import login_required
 import pandas as pd
+import datetime
+import pytz
 from pandas import DataFrame
 from app import app, yHandler
 from chart.compute import stat_to_score
@@ -37,10 +40,16 @@ def league(league_key):
     leagues = yHandler.get_leagues()
     for league in leagues:
         if (league_key == league['league_key']):
-            current_week = int(league['current_week'])
             start_week = int(league['start_week'])
             end_week = int(league['end_week'])
-            display_week = min(end_week, max(start_week, current_week -1))
+
+            current_week = int(league['current_week'])
+
+            weekday = datetime.datetime.now(pytz.timezone('US/Pacific')).weekday()
+            # if it is first half week (Mon/Tue/Wed), display previous week as default
+            if weekday <= 2:
+                current_week -= 1
+            display_week = min(end_week, max(start_week, current_week))
             break
 
     return redirect(url_for('week', league_key=league_key, week=display_week))

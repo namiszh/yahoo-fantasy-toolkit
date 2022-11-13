@@ -16,3 +16,4 @@ WebApp/venv
 
 flask-web-app/venv
 flask-web-app/credentials
+flask-web-app/.aws-sam

@@ -15,7 +15,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                    <img src="../static/image/brand.png" alt="Bootstrap">
+                    <img src="../static/image/brand.png" alt="Bootstrap"> @虎扑黄老邪
                   </a>
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -37,16 +37,26 @@
             </div>
         </nav>
 
+        <!-- Top Header -->
+        <!-- <div class="top-header py-2 bg-gradient bg-light">
+            <div class="container">
+                <h6>老黄研究 Yahoo Fantasy Basketball 的地方</h6>
+            </div>
+        </div> -->
+
         <!-- Navbar  -->
-        <div class="row sticky-top bg-gradient" style="background-color: #edecf3; height: 44px; margin: 0px; padding: 2px;">
+        <div class="row sticky-top bg-gradient bg-light" style="height: 44px; margin: 0px; padding: 2px;">
             <div class="col">
                 <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Select a league
-                    </button>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% for league in leagues %}
+                        {% if league.league_key == current_league_key:  %}
+                        {{league.name}}
+                        {% endif %}
+                        {% endfor %}
+                    </a>
                     {% if leagues|length > 1 %}
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu">
                         {% for league in leagues %}
                         {% if league.league_key == current_league_key:  %}
                         <li><a class="dropdown-item active"

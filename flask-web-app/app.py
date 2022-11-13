@@ -32,8 +32,9 @@ lm.init_app(app)
 lm.login_view = 'login'
 
 # run application
-if __name__ == "__main__": 
-    app.run(ssl_context=('./cert/cert.pem', './cert/key.pem'), debug=True)
+# if __name__ == "__main__": 
+    # app.run(ssl_context=('./cert/cert.pem', './cert/key.pem'), debug=True)
+    # app.run()
 
 
 from routes import views, auth

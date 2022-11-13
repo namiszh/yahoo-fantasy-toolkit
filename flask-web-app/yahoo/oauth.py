@@ -87,6 +87,7 @@ class YOAuth(object):
 
         if self.expiration_time - time.time() < 60:
             # refresh access token 60 seconds before it expires
+            print("expirating in 1 minute, need to refresh token.  Expiration time", self.expiration_time)
             self._update_token()
 
         if self.session is None:

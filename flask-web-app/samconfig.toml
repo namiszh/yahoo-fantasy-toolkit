@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "yfb-flask-app"
+s3_bucket = "yfb-flask-app"
+s3_prefix = ""
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["FlaskFunction=086638507420.dkr.ecr.us-east-1.amazonaws.com/yfb-flask-app"]

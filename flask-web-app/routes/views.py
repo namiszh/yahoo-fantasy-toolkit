@@ -22,9 +22,6 @@ from chart.bar_chart import league_bar_chart
 def index():
     return render_template('index.html')
 
-@app.route('/test')
-def test():
-    return render_template('test.html')
 
 @login_required
 @app.route('/main')
@@ -32,6 +29,7 @@ def main():
     leagues = yHandler.get_leagues()
     return render_template('main.html', leagues = leagues) # should be error for no league
 
+@login_required
 @app.route('/<league_key>')
 def league(league_key):
 
@@ -46,8 +44,8 @@ def league(league_key):
             current_week = int(league['current_week'])
 
             weekday = datetime.datetime.now(pytz.timezone('US/Pacific')).weekday()
-            # if it is first half week (Mon/Tue/Wed), display previous week as default
-            if weekday <= 2:
+            # if it is first half week (Mon/Tue/Wed/Thu), display previous week as default
+            if weekday <= 3:
                 current_week -= 1
             display_week = min(end_week, max(start_week, current_week))
             break
@@ -55,11 +53,12 @@ def league(league_key):
     return redirect(url_for('week', league_key=league_key, week=display_week))
 
 
-
-@app.route('/<league_key>/week=<int:week>')
+@login_required
+@app.route('/<league_key>/<int:week>')
 def week(league_key, week):
-    print('route to league with league_key=', league_key, 'week=', week)
+    print('=== route to league with league_key=', league_key, 'week=', week)
 
+    print('=== retrieving data from yahoo')
     # get league information
     leagues = yHandler.get_leagues()
     min_week = None
@@ -69,6 +68,11 @@ def week(league_key, week):
         if league['league_key'] == league_key:
             min_week = int(league['start_week'])
             max_week = int(league['current_week'])
+            weekday = datetime.datetime.now(pytz.timezone('US/Pacific')).weekday()
+            # in case there is no match on Monday, and it is earlier morning Tuesday now, no match has been played yet.
+            # then there is no stat available yet for this week.
+            if weekday <= 1:
+                max_week -= 1
             league_name = league['name']
             break
 
@@ -94,7 +98,9 @@ def week(league_key, week):
         week_stats.append(week_stat)
         total_stats.append(total_stat)
 
-    # use a pandas dataframe to cacluclate ranking value
+    print('=== Analyzing data')
+
+    # use a pandas dataframe to calculate ranking value
     week_df = pd.DataFrame(columns=stat_names, index=team_names)
     week_df.columns.name = 'Team Name'
     total_df = pd.DataFrame(columns=stat_names, index=team_names)
@@ -118,11 +124,14 @@ def week(league_key, week):
     total_score = stat_to_score(total_df, sort_orders)
     total_score = total_score.round(decimals=1).astype(object)  # remove trailing .0
 
+    print('=== Generating charts for visualization')
     bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], league_name, week)
     radar_charts = league_radar_charts(week_score, total_score, week)
 
+    print('=== rendering page')
     return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, bar_chart = bar_chart, radar_charts = radar_charts )
 
+@login_required
 @app.route('/<league_key>/<team_id>')
 def team(lid, tid):
     pass

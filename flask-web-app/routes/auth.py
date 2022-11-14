@@ -29,13 +29,13 @@ def login():
       This method is called when user clicks 'Sign in'
     '''
     if not current_user.is_anonymous:
-        print ('not anoymous')
+        print ('not anonymous')
         return redirect(url_for('main'))
     elif not yOauth.is_authorized():
-        print ('not authorized, redirct to', url_for('oauth_authorize'), 'for authorization')
+        print ('=== not authorized by yahoo')
         return redirect(url_for('oauth_authorize'))
     else:
-        print ('already signed in')
+        print ('=== already signed in to yahoo')
         _loginAction()
 
         return redirect(url_for('main'))

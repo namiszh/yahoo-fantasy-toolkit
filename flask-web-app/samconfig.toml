@@ -3,8 +3,8 @@ version = 0.1
 [default.deploy]
 [default.deploy.parameters]
 stack_name = "yfb-flask-app"
-s3_bucket = "yfb-flask-app"
-s3_prefix = ""
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ezlolqro0nf0"
+s3_prefix = "yfb-flask-app"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"

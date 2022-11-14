@@ -9,7 +9,7 @@ from flask import request, redirect, url_for
 from rauth import OAuth2Service
 import base64
 import time
-
+from rauth.compat import urlencode
 
 class YOAuth(object):
     '''
@@ -50,7 +50,7 @@ class YOAuth(object):
 
 
     def is_authorized(self):
-        # print('acess token', self, self.access_token)
+        # print('access token', self, self.access_token)
         return self.access_token is not None
 
 
@@ -59,10 +59,14 @@ class YOAuth(object):
           Redirect to the yahoo authorize page.
           Please call this method when user request route('/authorize')
         '''
+        callback_url = self._get_callback_url()
+        # print ('redirect url is', callback_url)
+        # auth_url = 'https://api.login.yahoo.com/oauth2/request_auth?response_type=code&scope=openid%20email%20profile%20openid2&' + urlencode({'redirect_uri': callback_url })
         auth_url = self.service.get_authorize_url(
             response_type='code',
-            redirect_uri=self._get_callback_url())
-        # print('auth_url', auth_url)
+            redirect_uri = callback_url,
+            scope = 'openid')
+        print('=== redirect to', auth_url)
         return redirect(auth_url)
 
 
@@ -71,12 +75,13 @@ class YOAuth(object):
           Get code after login in
           Please call this method when request route('/callback')
         '''
+        print('=== redirect to callback url after authorization. request.args', request.args)
         if 'code' not in request.args:
             return None, None, None
 
         self.code = request.args['code']
 
-        # print('authorizaiton code', self.code)
+        # print('authorization code', self.code)
 
         # exchange code for token
         self._update_token()
@@ -85,9 +90,10 @@ class YOAuth(object):
     def request(self, request_str, params={'format': 'json'}):
         ''' Response to a user request '''
 
-        if self.expiration_time - time.time() < 60:
-            # refresh access token 60 seconds before it expires
-            print("expirating in 1 minute, need to refresh token.  Expiration time", self.expiration_time)
+        print('Get request: url=', request_str, 'params=',  params)
+        now = time.time()
+        if self.expiration_time - now < 60:  # expiring soon (in 1 minute), refresh token
+            print("expiring in 1 minute, need to refresh token.  Expiration time:", self.expiration_time, 'Now:', now)
             self._update_token()
 
         if self.session is None:
@@ -111,15 +117,18 @@ class YOAuth(object):
                         "redirect_uri": callback_url,
                         "grant_type": "refresh_token",
                     }
+            print('refresh token')
         else:
             data =  {
                         "code": self.code,
                         "redirect_uri": callback_url,
                         "grant_type": "authorization_code",
                     }
+            print('exchange token from code', self.code)
 
         raw_token = self.service.get_raw_access_token(data=data, headers=self.headers)
         parsed_token = raw_token.json()
+        print ('parsed_token', parsed_token)
         self.access_token = parsed_token["access_token"]
         # print('access token', self.access_token)
         self.refresh_token = parsed_token["refresh_token"]
@@ -135,7 +144,7 @@ class YOAuth(object):
         '''
           The callback url should be something like "http://www.yourdomain.com/callback"
           We use url_for function to dynamically get the callback url rather than a hard coded
-          string so that we can handle both local development and deployed enviroment with same code.
+          string so that we can handle both local development and deployed environment with same code.
         '''
         return url_for('oauth_callback', _external=True)
 

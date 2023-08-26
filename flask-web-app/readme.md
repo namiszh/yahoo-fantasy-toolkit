@@ -53,7 +53,7 @@ goto https://fba.laowang.org (not ready yet) and try it
    `python -m pip install pip==21.3.1`
 
 1. install dependency
-   `pip -r requirements.txt`
+   `pip install -r requirements.txt`
 
 1. create a credential file in the root folder. Put the *Client ID (Consumer Key)* in the first line, and *Client Secret (Consumer Secret)* in the second line.
    ![Yahoo Application credential](/flask-web-app/docs/credentaial.png)

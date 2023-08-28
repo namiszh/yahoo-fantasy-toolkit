@@ -4,6 +4,7 @@
 import pandas as pd
 from pandas import DataFrame
 from scipy.stats import rankdata
+import numpy as np
 # import re
 # import matplotlib.pyplot as plt
 # import os
@@ -11,7 +12,16 @@ from scipy.stats import rankdata
 # from io import BytesIO
 # import base64
 
+def format_dataframe(df):
+    ''' Given a data frame, format the element value as str, like 3., 3.0, format it as 3
+    '''
+    s = str(value)
+    r = value
+    if (s.endswith('.') or s.endswith('.0')):
+        r = int(value)
 
+    print(value, s, r)
+    return str(r)
 
 def data_to_ranking_score(values, reverse = False):
     '''
@@ -48,3 +58,36 @@ def stat_to_score(stat_df, sort_orders):
 
     return score_df
 
+def compute_battle_score(scores_team1, scores_team2):
+    '''Given the category score of two players, compute the match up score between them
+    '''
+    a = 0
+    b = 0
+    for i in range(len(scores_team1) ):
+        if (scores_team1[i] > scores_team2[i]):
+            a += 1
+        elif (scores_team1[i] < scores_team2[i]):
+            b += 1
+        else: 
+            a += 0.5
+            b += 0.5
+    
+    return a, b
+
+
+
+def roto_score_to_battle_score(score_df):
+    '''Give the roto score of a league for a week, calculate the matchup score against every other player
+    '''
+
+    battle_df = pd.DataFrame(columns=score_df.index, index=score_df.index) 
+
+    team_scores = score_df.to_numpy()
+    for i in range(len(team_scores) ):
+        for j in range (i+1, len(team_scores)):
+            score1, score2 = compute_battle_score(team_scores[i][:-1], team_scores[j][:-1])
+            battle_df.iat[i, j] = score1
+            battle_df.iat[j, i] = score2
+
+    return battle_df
+            

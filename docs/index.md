@@ -18,7 +18,7 @@ That's brilliant! ! ! Yahoo API is absolutely much better, because it's more sta
 To use Yahoo API, you first need to create a [Yahoo APP](https://developer.yahoo.com/apps/).
 
 
-![alt text](images/create_yahoo_app.PNG "Create Yahoo APP")
+![alt text](images/create_yahoo_app.png "Create Yahoo APP")
 
 
 If you select 'Web Application' in Application Type, a Callback Domain is required. However, localhost or 127.0.0.1 is not allowed.

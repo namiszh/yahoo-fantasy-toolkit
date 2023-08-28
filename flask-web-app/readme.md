@@ -14,7 +14,7 @@ Web application to display yahoo fantasy basketball data analysis result.
 
 ## For Users
 
-goto https://fba.laowang.org (not ready yet) and try it
+goto https://fba.laohuang.org and try it, you need to sign in with your Yahoo account to see your result.
 
 **Demo**
 
@@ -27,7 +27,7 @@ goto https://fba.laowang.org (not ready yet) and try it
 1. have python installed
 
 1. create an application in Yahoo developer https://developer.yahoo.com/apps/
-   ![Create Yahoo Application](/flask-web-app/docs/create_yahoo_applicaton.PNG)
+   ![Create Yahoo Application](/flask-web-app/docs/create_yahoo_applicaton.png)
    - Homepage URL: The url you plan to deploy your website to
    - Redirect URI(s): Besides the deployed url, also add https://127.0.0.1:5000/callback for your local deployment. 
      
@@ -53,7 +53,7 @@ goto https://fba.laowang.org (not ready yet) and try it
    `python -m pip install pip==21.3.1`
 
 1. install dependency
-   `pip -r requirements.txt`
+   `pip isntall -r requirements.txt`
 
 1. create a credential file in the root folder. Put the *Client ID (Consumer Key)* in the first line, and *Client Secret (Consumer Secret)* in the second line.
    ![Yahoo Application credential](/flask-web-app/docs/credentaial.png)
@@ -63,4 +63,20 @@ goto https://fba.laowang.org (not ready yet) and try it
 
 ### Deployment
 
-Try to deploy to AWS using 
+I use AWS API Gateway and Lambda to deploy.
+
+
+1. build the docker image
+   `docker build .`
+
+2. tag the image
+   `docker tag xxxx(image id) your-aws-ecr-repo-uri:yyy(tag)`
+
+3. push the image to ECR
+   `docker push your-aws-ecr-repo-uri:yyy(tag)`
+
+4. Create a lambda funciton using the image
+
+5. Create an api gateway
+
+

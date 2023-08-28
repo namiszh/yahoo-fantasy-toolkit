@@ -30,7 +30,7 @@ class YHandler:
         '''
         Return all leagues of current user
         '''
-        uri = 'users;use_login=1/games;game_keys=nba/leagues'
+        uri = 'users;use_login=1/games;game_keys=304/leagues'
         resp = self._get(uri)
         t = objectpath.Tree(resp)
         jfilter = t.execute('$..leagues..(league_key, league_id, name, logo_url, current_week, start_week, end_week)')

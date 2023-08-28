@@ -90,7 +90,7 @@ class YOAuth(object):
     def request(self, request_str, params={'format': 'json'}):
         ''' Response to a user request '''
 
-        print('Get request: url=', request_str, 'params=',  params)
+        # print('Get request: url=', request_str, 'params=',  params)
         now = time.time()
         if self.expiration_time - now < 60:  # expiring soon (in 1 minute), refresh token
             print("expiring in 1 minute, need to refresh token.  Expiration time:", self.expiration_time, 'Now:', now)
@@ -128,7 +128,7 @@ class YOAuth(object):
 
         raw_token = self.service.get_raw_access_token(data=data, headers=self.headers)
         parsed_token = raw_token.json()
-        print ('parsed_token', parsed_token)
+        # print ('parsed_token', parsed_token)
         self.access_token = parsed_token["access_token"]
         # print('access token', self.access_token)
         self.refresh_token = parsed_token["refresh_token"]

@@ -13,7 +13,7 @@ import datetime
 import pytz
 from pandas import DataFrame
 from app import app, yHandler
-from chart.compute import stat_to_score
+from chart.compute import stat_to_score, roto_score_to_battle_score
 from chart.radar_chart import league_radar_charts
 from chart.bar_chart import league_bar_chart
 
@@ -99,6 +99,9 @@ def week(league_key, week):
         total_stats.append(total_stat)
 
     print('=== Analyzing data')
+    print(stat_names)
+    tie_score = len(stat_names) / 2
+    print(tie_score)
 
     # use a pandas dataframe to calculate ranking value
     week_df = pd.DataFrame(columns=stat_names, index=team_names)
@@ -119,17 +122,21 @@ def week(league_key, week):
     total_df = total_df.astype(data_types)
 
     week_score = stat_to_score(week_df, sort_orders)
-    week_score = week_score.round(decimals=1).astype(object)
 
     total_score = stat_to_score(total_df, sort_orders)
-    total_score = total_score.round(decimals=1).astype(object)  # remove trailing .0
+
+    battle_score = roto_score_to_battle_score(week_score)
+    # make ithe table pretty with different background color for win/lose/tie
+    styled_battle_score = battle_score.style.apply(
+    lambda x: ['background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'
+               if value < tie_score else ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if value > tie_score else 'background-color: #ffffd9') for value in x])
 
     print('=== Generating charts for visualization')
     bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], league_name, week)
     radar_charts = league_radar_charts(week_score, total_score, week)
 
     print('=== rendering page')
-    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, bar_chart = bar_chart, radar_charts = radar_charts )
+    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, battle_score= styled_battle_score, bar_chart = bar_chart, radar_charts = radar_charts )
 
 @login_required
 @app.route('/<league_key>/<team_id>')

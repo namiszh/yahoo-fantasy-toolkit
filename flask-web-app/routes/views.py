@@ -135,8 +135,25 @@ def week(league_key, week):
     total_score = remove_trailing_zero(total_score)
     battle_score = remove_trailing_zero(battle_score)
 
+    # week_df.style.set_properties(**{'text-align': 'right'})
+    # total_df.style.set_properties(**{'text-align': 'right'})
+    # week_score.style.set_properties(**{'text-align': 'right'})
+    # total_score.style.set_properties(**{'text-align': 'right'})
+    # battle_score.style.set_properties(**{'text-align': 'right'})
+    team_number = len(team_names)
+    # highligh max and min
+    week_score = week_score.style.apply(
+    lambda x: [ 'background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'if float(value) == 1 else
+          ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if float(value) == team_number else 
+        '') for value in x])
+    # highlight max and min
+    total_score = total_score.style.apply(
+    lambda x: [ 'background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'if float(value) == 1 else
+          ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if float(value) == team_number else 
+        '') for value in x])
+    
     # make ithe table pretty with different background color for win/lose/tie
-    styled_battle_score = battle_score.style.apply(
+    battle_score = battle_score.style.apply(
     lambda x: [ '' if value=='' else
         ('background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'if float(value) < tie_score else
           ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if float(value) > tie_score else 
@@ -144,7 +161,7 @@ def week(league_key, week):
 
     print('=== Generating charts for visualization')
     print('=== rendering page')
-    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, battle_score= styled_battle_score, bar_chart = bar_chart, radar_charts = radar_charts )
+    return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, battle_score= battle_score, bar_chart = bar_chart, radar_charts = radar_charts )
 
 @login_required
 @app.route('/<league_key>/<team_id>')

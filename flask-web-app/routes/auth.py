@@ -63,5 +63,6 @@ def oauth_callback():
 
 def _loginAction():
     user_id = yHandler.get_user_id()
+    print('=== user:', user_id)
     user = User(user_id)
     # login_user(user)

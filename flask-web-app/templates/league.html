@@ -120,6 +120,8 @@
                         <H4>Rank - Week {{current_week}}</H4>
                         {{ week_rank.to_html(classes="table table-striped table-sm") | safe}}
                     </div>
+                </div>
+                <div class="row row-md-3 row-sm-3 row-xs-3">
                     <div class="col">
                         <H4>Rank - Total</H4>
                         {{ total_rank.to_html(classes="table table-striped table-sm") | safe}}
@@ -129,7 +131,7 @@
                 <div class="row row-md-3 row-sm-3 row-xs-3">
                     <div class="col">
                         <H4>Battle - Week {{current_week}}</H4>
-                        {{ battle_score.to_html(classes="table table-striped table-sm", na_rep="") | safe}}
+                        {{ battle_score.to_html(classes="table table-striped table-sm") | safe}}
                     </div>
                 </div>
                 <div class="row mb-4" id="radar_charts">&nbsp;</div>
@@ -153,11 +155,13 @@
                 <div class="row row-md-3 row-sm-3 row-xs-3">
                     <div class="col">
                         <H4>Stat - Week {{current_week}}</H4>
-                        {{ week_stats.to_html(classes="table table-striped table-sm") | safe}}
+                        {{ week_stats.to_html(classes="table table-striped table-sm", justify='left') | safe}}
                     </div>
+                </div>
+                <div class="row row-md-3 row-sm-3 row-xs-3">
                     <div class="col">
                         <H4>Stat - Total</H4>
-                        {{ total_stats.to_html(classes="table table-striped table-sm") | safe}}
+                        {{ total_stats.to_html(classes="table table-striped table-sm", justify='left') | safe}}
                     </div>
                 </div>
             </div>

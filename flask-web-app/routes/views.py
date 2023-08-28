@@ -52,6 +52,9 @@ def league(league_key):
 
     return redirect(url_for('week', league_key=league_key, week=display_week))
 
+def remove_trailing_zero(df):
+    df1 = df.astype(str).replace(to_replace=r'\.0*$', value='', regex=True).replace('nan', '')
+    return df1
 
 @login_required
 @app.route('/<league_key>/<int:week>')
@@ -99,9 +102,7 @@ def week(league_key, week):
         total_stats.append(total_stat)
 
     print('=== Analyzing data')
-    print(stat_names)
     tie_score = len(stat_names) / 2
-    print(tie_score)
 
     # use a pandas dataframe to calculate ranking value
     week_df = pd.DataFrame(columns=stat_names, index=team_names)
@@ -122,19 +123,26 @@ def week(league_key, week):
     total_df = total_df.astype(data_types)
 
     week_score = stat_to_score(week_df, sort_orders)
-
     total_score = stat_to_score(total_df, sort_orders)
 
     battle_score = roto_score_to_battle_score(week_score)
-    # make ithe table pretty with different background color for win/lose/tie
-    styled_battle_score = battle_score.style.apply(
-    lambda x: ['background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'
-               if value < tie_score else ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if value > tie_score else 'background-color: #ffffd9') for value in x])
 
-    print('=== Generating charts for visualization')
     bar_chart = league_bar_chart(team_names, week_score['Total'], total_score['Total'], league_name, week)
     radar_charts = league_radar_charts(week_score, total_score, week)
 
+    # format output
+    week_score = remove_trailing_zero(week_score)
+    total_score = remove_trailing_zero(total_score)
+    battle_score = remove_trailing_zero(battle_score)
+
+    # make ithe table pretty with different background color for win/lose/tie
+    styled_battle_score = battle_score.style.apply(
+    lambda x: [ '' if value=='' else
+        ('background: linear-gradient(90deg, #5fba7d 100.0%, transparent 100.0%)'if float(value) < tie_score else
+          ('background: linear-gradient(90deg, #d65f5f 100.0%, transparent 100.0%)' if float(value) > tie_score else 
+           'background-color: #ffffd9')) for value in x])
+
+    print('=== Generating charts for visualization')
     print('=== rendering page')
     return render_template('league.html', leagues = leagues, current_league_key=league_key, current_week=week, min_week = min_week, max_week = max_week, week_stats=week_df, week_rank = week_score, total_stats=total_df, total_rank = total_score, battle_score= styled_battle_score, bar_chart = bar_chart, radar_charts = radar_charts )
 

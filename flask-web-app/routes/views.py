@@ -17,6 +17,11 @@ from chart.compute import stat_to_score, roto_score_to_battle_score
 from chart.radar_chart import league_radar_charts
 from chart.bar_chart import league_bar_chart
 
+def remove_trailing_zero(df):
+    df1 = df.astype(str).replace(to_replace=r'\.0*$', value='', regex=True).replace('nan', '')
+    return df1
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -52,9 +57,7 @@ def league(league_key):
 
     return redirect(url_for('week', league_key=league_key, week=display_week))
 
-def remove_trailing_zero(df):
-    df1 = df.astype(str).replace(to_replace=r'\.0*$', value='', regex=True).replace('nan', '')
-    return df1
+
 
 @login_required
 @app.route('/<league_key>/<int:week>')
@@ -135,11 +138,7 @@ def week(league_key, week):
     total_score = remove_trailing_zero(total_score)
     battle_score = remove_trailing_zero(battle_score)
 
-    # week_df.style.set_properties(**{'text-align': 'right'})
-    # total_df.style.set_properties(**{'text-align': 'right'})
-    # week_score.style.set_properties(**{'text-align': 'right'})
-    # total_score.style.set_properties(**{'text-align': 'right'})
-    # battle_score.style.set_properties(**{'text-align': 'right'})
+
     team_number = len(team_names)
     # highligh max and min
     week_score = week_score.style.apply(

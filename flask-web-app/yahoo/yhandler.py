@@ -1,6 +1,7 @@
 #!/bin/python
 
 import objectpath
+import datetime
 
 YAHOO_ENDPOINT = 'https://fantasysports.yahooapis.com/fantasy/v2'
 
@@ -28,9 +29,15 @@ class YHandler:
 
     def get_leagues(self):
         '''
-        Return all leagues of current user
+        Return all leagues of current user for the recent season
         '''
-        uri = 'users;use_login=1/games;game_keys=304/leagues'
+        today = datetime.date.today()
+        season = today.year
+        if today.month < 10 or (today.month == 10 and today.day < 25): # nba season usually starts at the end of Oct
+            season -= 1
+
+        print('=== get leagues for season', season)
+        uri = 'users;use_login=1/games;game_codes=nba;seasons={}/leagues'.format(season)
         resp = self._get(uri)
         t = objectpath.Tree(resp)
         jfilter = t.execute('$..leagues..(league_key, league_id, name, logo_url, current_week, start_week, end_week)')
